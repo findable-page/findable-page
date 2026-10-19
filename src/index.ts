@@ -202,7 +202,7 @@ async function staticHtmlResponse(html: string | null, notFound: string): Promis
   });
 }
 
-const OWN_HOSTS = ["findable.page", "seoscore.piply.xyz"];
+const OWN_HOSTS = ["findable.page"];
 
 const worker = {
   async fetch(request: Request, env: Env = {}, ctx?: { waitUntil(p: Promise<unknown>): void }): Promise<Response> {

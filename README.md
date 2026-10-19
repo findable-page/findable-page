@@ -2,7 +2,7 @@
 
 Website and Cloudflare Worker API for [findable](https://github.com/nadimtuhin/findable) — the offline-first SEO, AEO, and GEO signal auditor.
 
-Powers `https://findable.page` and `https://seoscore.piply.xyz`.
+Powers `https://findable.page`.
 
 ## Features
 
