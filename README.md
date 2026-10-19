@@ -1,6 +1,6 @@
 # findable.page
 
-Website and Cloudflare Worker API for [findable](https://github.com/nadimtuhin/findable) — the offline-first SEO, AEO, and GEO signal auditor.
+Website and Cloudflare Worker API for [findable](https://github.com/findable-page/findable) — the offline-first SEO, AEO, and GEO signal auditor.
 
 Powers `https://findable.page`.
 
