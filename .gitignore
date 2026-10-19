@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Wrangler & Cloudflare build artifacts
+.wrangler/
+dist/
+
+# OS and environment
+.DS_Store
+.env*
+!.env.example

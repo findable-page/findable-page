@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>findable: is your site findable by Google and AI?</title>
+  <meta name="description" content="findable: is your site findable by Google and by AI answer engines? Free scan that scores your page for SEO, AEO and GEO with dozens of checks and ranked fixes.">
+  <link rel="canonical" href="https://findable.page/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#6d5efc">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="findable">
+  <meta property="og:url" content="https://findable.page/">
+  <meta property="og:title" content="findable: is your site findable by Google and AI?">
+  <meta property="og:description" content="findable: is your site findable by Google and by AI answer engines? Free scan that scores your page for SEO, AEO and GEO with dozens of checks and ranked fixes.">
+  <meta property="og:image" content="https://findable.page/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="findable: is your site findable by Google and AI?">
+  <meta name="twitter:description" content="findable: is your site findable by Google and by AI answer engines? Free scan that scores your page for SEO, AEO and GEO with dozens of checks and ranked fixes.">
+  <meta name="twitter:image" content="https://findable.page/og.jpg">
+  <!--slot:head-->
+  <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is findable free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. It costs $0, needs no signup and the code is MIT licensed on GitHub."}}, {"@type": "Question", "name": "What do SEO, AEO and GEO mean?", "acceptedAnswer": {"@type": "Answer", "text": "SEO makes a page easy for a search crawler to fetch and rank. AEO shapes it so an answer box or chat tool can lift a short, correct answer. GEO gives an AI model facts, authors and sources it can cite."}}, {"@type": "Question", "name": "How is the score computed?", "acceptedAnswer": {"@type": "Answer", "text": "The overall score is SEO at 50%, AEO at 25% and GEO at 25%, rounded to a whole number from 0 to 100. Each family score is the share of its applicable checks that pass. There are 160 checks: 98 SEO, 35 AEO and 27 GEO."}}, {"@type": "Question", "name": "What does findable store?", "acceptedAnswer": {"@type": "Answer", "text": "A scan fetches the public URL you submit, plus its robots.txt and llms.txt. Scan results are not cached. Share previews are cached for 1 hour, and speed test results and share cards for up to 24 hours. The optional speed test sends the URL to Google PageSpeed. Share links carry the score in the link itself. Reports you create with Get permanent link are stored for 90 days. If you opt in to watch a site, your email and the site host are stored. There are no ads, trackers or accounts."}}, {"@type": "Question", "name": "Is there a WordPress plugin?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it is free. It scans a post or page from the editor, adds a score column and bulk-scans up to 20 of your latest posts. Fix All prints a meta description, a canonical if WordPress doesn't already print one, Open Graph and JSON-LD tags in the page head without editing your content, and Undo restores the previous state."}}, {"@type": "Question", "name": "How do I use it from a terminal or an AI agent?", "acceptedAnswer": {"@type": "Answer", "text": "Install the Go CLI with go install github.com/nadimtuhin/findable/cmd/findable@latest, then run findable https://example.com. Run findable -mcp, or npx -y findable-mcp, to give an AI agent the audit tools. Use -format sarif or the GitHub Action to fail a CI build under a score you choose."}}, {"@type": "Question", "name": "Can it scan more than one page?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Crawl Site mode (beta) scans your start page plus internal links, up to 20 pages. The CLI can go further, for example findable -crawl -limit 100 to scan 100 pages."}}, {"@type": "Question", "name": "Does findable ask ChatGPT, Perplexity, Claude or Google AI about my page?", "acceptedAnswer": {"@type": "Answer", "text": "No. It checks the signals on your page that answer engines can use, such as structured data, direct answers, clear authorship and sources. It does not query any AI product."}}]}</script>
+  <script>
+    (function() {
+      let saved = null;
+      try { saved = localStorage.getItem("seoscore_theme"); } catch {}
+      // Light is the deliberate default: prefers-color-scheme is intentionally ignored.
+      document.documentElement.setAttribute("data-theme", saved || "light");
+    })();
+  </script>
+  <style>
+    :root, [data-theme="light"] {
+      --bg: #FFFFFF; --surface: #FFFFFF; --surface-hover: #F6F7FB; --bg-input: #FFFFFF;
+      --text: #0F1222; --text-2: #3A3F5C; --muted: #5D6382; --ink: #0F1222;
+      --accent: #4F2BFF; --accent-light: #EEEBFF; --on-accent: #FFFFFF;
+      --amber: #FFB020; --amber-ink: #7A4300; --on-amber: #0F1222;
+      --ok: #0E7C4A; --ok-light: #E1F7EA; --warn: #8A4B00; --warn-light: #FFF1CC;
+      --bad: #C81E2B; --bad-light: #FDEAEA; --na: #4B5563; --na-light: #EEF0F4;
+      --fam-seo: #0E7C4A; --fam-aeo: #4F2BFF; --fam-geo: #D1480D;
+      --border: #E6E8F0; --border-ui: #6B7090; --focus: #4F2BFF; --ring-bg: #EEF0F6;
+      --dot: #E6E8F0; --blob-amber: rgba(255, 176, 32, 0.33); --blob-violet: rgba(79, 43, 255, 0.25);
+      --shadow: 4px 4px 0 var(--ink); --shadow-lg: 6px 6px 0 var(--ink);
+    }
+    [data-theme="dark"] {
+      --bg: #14111F; --surface: #1E1A2F; --surface-hover: #2A2442; --bg-input: #100D1A;
+      --text: #F7F3FF; --text-2: #D3CCEA; --muted: #A59FC2; --ink: #F7F3FF;
+      --accent: #B5A8FF; --accent-light: #2D2560; --on-accent: #14111F;
+      --amber: #FFB020; --amber-ink: #FFC24D; --on-amber: #0F1222;
+      --ok: #4FDDA0; --ok-light: #1B3A33; --warn: #FFC24D; --warn-light: #3A2D1B;
+      --bad: #FF9A9F; --bad-light: #43212B; --na: #B4B9C4; --na-light: #2C2B3C;
+      --fam-seo: #4FDDA0; --fam-aeo: #B5A8FF; --fam-geo: #FF8A4C;
+      --border: #332C4D; --border-ui: #7C7599; --focus: #B5A8FF; --ring-bg: #332C4D;
+      --dot: #2A2442; --blob-amber: rgba(255, 176, 32, 0.12); --blob-violet: rgba(181, 168, 255, 0.16);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg) radial-gradient(var(--dot) 1.2px, transparent 1.3px) 0 0 / 24px 24px; color: var(--text); line-height: 1.55; }
+    body::before { content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none; background: radial-gradient(circle at 8% 12%, var(--blob-amber), transparent 30%), radial-gradient(circle at 92% 18%, var(--blob-violet), transparent 30%); }
+    .container { width: min(100% - 2rem, 1240px); margin-inline: auto; }
+    :where(button, input, select, a, summary, [tabindex]):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    a { color: var(--accent); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    header { border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 50; }
+    .header-inner { display: flex; justify-content: space-between; align-items: center; height: 64px; }
+    .logo { display: flex; align-items: center; text-decoration: none; }
+    .logo-svg { display: block; width: 135px; height: 32px; }
+    .logo-word { fill: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-link { color: var(--text-2); font-weight: 600; font-size: 0.9rem; text-decoration: none; padding: 0.5rem; }
+    .nav-link:hover { color: var(--accent); }
+    .btn-api-badge, .btn-action, .theme-toggle { background: var(--surface); border: 1px solid var(--border-ui); color: var(--text); border-radius: 10px; font: inherit; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
+    .share-status { font-size: 0.85rem; color: var(--text); align-self: center; }
+    .share-wrap { position: relative; }
+    .share-panel { position: absolute; right: 0; top: calc(100% + 0.4rem); z-index: 20; width: min(22rem, 90vw); display: grid; gap: 0.6rem; padding: 0.9rem; background: var(--surface); border: 1px solid var(--border-ui); border-radius: 12px; box-shadow: 0 10px 30px rgba(15, 18, 34, 0.15); }
+    .share-panel[hidden] { display: none; }
+    .share-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .share-links a { text-decoration: none; }
+    .watch-form { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+    .watch-form input[type=email] { font: inherit; padding: 0.45rem 0.6rem; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); min-width: 16rem; }
+    .watch-consent { font-size: 0.85rem; color: var(--text-2); flex-basis: 100%; }
+    .watch-trap { position: absolute; left: -9999px; }
+    .share-label { font-size: 0.8rem; font-weight: 600; color: var(--text-2); }
+    .share-text { font: inherit; font-size: 0.85rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; resize: vertical; }
+    .btn-api-badge, .btn-action { padding: 0.5rem 0.9rem; }
+    .btn-api-badge { color: var(--text); border: 2px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+    .lang-select { background: var(--surface); border: 1px solid var(--border-ui); color: var(--text); border-radius: 10px; font: inherit; font-weight: 600; font-size: 0.85rem; height: 40px; padding: 0 0.4rem; cursor: pointer; }
+    .theme-toggle { width: 40px; height: 40px; justify-content: center; }
+    .btn-api-badge:hover, .btn-action:hover, .theme-toggle:hover { background: var(--surface-hover); }
+    @media (max-width: 640px) { .btn-api-badge span, .nav-link { display: none; } }
+
+    .hero { text-align: left; padding: clamp(1.75rem, 4vw, 3rem) 0 1.25rem; }
+    .hero-badge { display: inline-block; padding: 0.3rem 0.9rem; background: var(--accent-light); color: var(--accent); border-radius: 9999px; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem; }
+    h1.hero-title { font-size: clamp(2.4rem, 6vw, 4.25rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; max-width: 940px; margin: 0 0 1rem; }
+    .hl { color: var(--on-amber); background: linear-gradient(transparent 55%, var(--amber) 55%) no-repeat 0 0 / 100% 100%; -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 0.1em; }
+    [data-theme="dark"] .hl { background-image: linear-gradient(var(--amber), var(--amber)); }
+    p.hero-subtitle { color: var(--text-2); font-size: clamp(1rem, 1.7vw, 1.15rem); max-width: 700px; margin: 0 0 1.5rem; }
+
+    .scan-card { background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; padding: clamp(1rem, 2.5vw, 1.5rem); width: min(100%, 820px); margin: 0 0 1.25rem; box-shadow: var(--shadow); transition: box-shadow 0.15s; }
+    .scan-card:focus-within { box-shadow: var(--shadow-lg); }
+    .mode-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; padding: 4px; margin-bottom: 1rem; background: var(--surface-hover); border: 2px solid var(--ink); border-radius: 12px; }
+    .mode-toggle::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: var(--accent); border-radius: 8px; transition: transform 0.2s; }
+    .mode-toggle:has(#btnModeSite.active)::before { transform: translateX(100%); }
+    .mode-btn { position: relative; padding: 0.5rem 0.8rem; background: transparent; border: 0; color: var(--text-2); border-radius: 8px; font: inherit; font-weight: 600; font-size: 0.9rem; cursor: pointer; }
+    .mode-btn.active { color: var(--on-accent); }
+    .field-label { display: block; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-2); margin-bottom: 0.35rem; }
+    .input-row { display: flex; gap: 0.75rem; margin-bottom: 0.6rem; }
+    .input-wrap { flex: 1; position: relative; display: flex; align-items: center; }
+    .input-icon { position: absolute; left: 1rem; color: var(--muted); pointer-events: none; }
+    input.url-input, .keyphrase-input { width: 100%; background: var(--bg-input); border: 2px solid var(--ink); color: var(--text); border-radius: 12px; font: inherit; }
+    input.url-input { padding: 0.8rem 1rem 0.8rem 2.8rem; font-size: 1.05rem; }
+    .keyphrase-input { padding: 0.6rem 1rem; font-size: 0.9rem; }
+    input::placeholder { color: var(--muted); opacity: 1; }
+    button.scan-btn { background: var(--accent); color: var(--on-accent); border: 2px solid var(--ink); box-shadow: var(--shadow); padding: 0 1.6rem; border-radius: 12px; font: inherit; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: transform 0.1s, box-shadow 0.1s; }
+    button.scan-btn:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--ink); }
+    button.scan-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+    .trust-row { display: flex; justify-content: flex-start; gap: 0.4rem 1rem; flex-wrap: wrap; color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    .recent-strip { width: min(100%, 820px); margin: 0 0 1rem; text-align: left; }
+    .recent-header { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+    .link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); text-transform: inherit; letter-spacing: inherit; cursor: pointer; }
+    .recent-items { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .recent-pill { background: var(--surface); border: 1px solid var(--border-ui); padding: 0.3rem 0.8rem; border-radius: 9999px; font: inherit; font-size: 0.82rem; color: var(--text-2); cursor: pointer; display: inline-flex; gap: 0.4rem; }
+    .recent-pill:hover { border-color: var(--accent); color: var(--text); }
+    .recent-score { font-weight: 800; color: var(--accent); }
+
+    .error-panel { background: var(--surface); border: 1px solid var(--bad); border-left-width: 4px; border-radius: 14px; padding: 1rem 1.25rem; width: min(100%, 820px); margin: 0 0 1.25rem; text-align: left; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .error-panel-text { flex: 1; min-width: 200px; overflow-wrap: anywhere; }
+    .error-panel-title { font-weight: 800; color: var(--bad); }
+
+    .agent { margin: 1.5rem 0; width: min(100%, 820px); background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; padding: 1.25rem 1.5rem; box-shadow: var(--shadow); }
+    .agent-title { font-size: 1.05rem; margin-bottom: 0.9rem; overflow-wrap: anywhere; }
+    .steps { list-style: none; display: grid; gap: 0.7rem; }
+    .steps li { display: flex; align-items: center; gap: 0.75rem; color: var(--muted); }
+    .steps .mark { width: 1.5rem; height: 1.5rem; border-radius: 50%; border: 2px solid var(--border-ui); display: grid; place-items: center; font-size: 0.8rem; font-weight: 800; flex: none; }
+    .steps [data-state="run"] { color: var(--text); font-weight: 700; }
+    .steps [data-state="run"] .mark { border-color: var(--amber); border-top-color: transparent; animation: spin 0.8s linear infinite; }
+    .steps [data-state="done"] { color: var(--text-2); }
+    .steps [data-state="done"] .mark { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .steps [data-state="done"] .mark::before { content: "\2713"; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .results-wrap { margin: 1.5rem 0 3rem; }
+    .score-hero { background: var(--surface); border: 2px solid var(--ink); border-radius: 16px; padding: 1.5rem; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1.5rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
+    .hero-info { min-width: 0; }
+    .results-heading { font-size: 1.5rem; letter-spacing: -0.02em; line-height: 1.2; }
+    .results-heading:focus { outline: none; }
+    .summary-line { color: var(--text-2); margin-top: 0.3rem; }
+    .grade-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
+    .failing-summary { font-weight: 700; font-size: 0.9rem; }
+    .site-url-title { font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; margin-top: 0.4rem; }
+    .site-meta-line { font-size: 0.85rem; color: var(--muted); }
+    .site-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ring-box { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+    .ring-box.large { width: 120px; height: 120px; }
+    .ring-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    .ring-bg { fill: none; stroke: var(--ring-bg); stroke-width: 10; }
+    .ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; stroke-dasharray: 314.16; stroke-dashoffset: 314.16; }
+    .ring-value { position: absolute; inset: 0; display: grid; place-items: center; font: 800 1.45rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; }
+    .ring-value.large { font-size: 2.6rem; }
+    .grade-badge { display: inline-block; padding: 0.15rem 0.7rem; border: 2px solid var(--ink); border-radius: 6px; background: var(--amber); color: var(--on-amber); font-weight: 900; font-size: 1.1rem; transform: rotate(-3deg); }
+
+    .next-actions { background: var(--surface); border: 2px solid var(--ink); box-shadow: var(--shadow); border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+    .next-actions h2 { font-size: 1.2rem; }
+    .next-actions > p { color: var(--text-2); margin: 0.15rem 0 0.9rem; }
+    .fixes { list-style: none; display: grid; counter-reset: fix; }
+    .fix-card { background: var(--surface); border-top: 1px solid var(--border); padding: 0.9rem 0 0.9rem 2.9rem; position: relative; counter-increment: fix; color: var(--text); }
+    .fix-card::before { content: counter(fix); position: absolute; left: 0; top: 0.85rem; width: 1.8rem; height: 1.8rem; border-radius: 8px; background: var(--text); color: var(--bg); display: grid; place-items: center; font: 700 0.9rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .fix-head { display: flex; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; }
+    .fix-head strong { overflow-wrap: anywhere; }
+    .pts { font: 700 0.85rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ok); background: var(--ok-light); border-radius: 9999px; padding: 0.1rem 0.65rem; align-self: flex-start; }
+    .fix-meta { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; margin: 0.35rem 0; font-size: 0.8rem; color: var(--muted); }
+    .fix-how { color: var(--text-2); font-size: 0.9rem; }
+    .engines { display: inline-flex; gap: 0.3rem; flex-wrap: wrap; }
+    .eng { background: var(--accent-light); color: var(--accent); border-radius: 9999px; padding: 0.05rem 0.55rem; font-size: 0.72rem; font-weight: 700; }
+
+    .family-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .family-card { background: var(--surface); border: 2px solid var(--ink); border-top: 6px solid var(--fam); border-radius: 16px; box-shadow: var(--shadow); padding: 1.25rem; }
+    .family-card:nth-child(1) { --fam: var(--fam-seo); }
+    .family-card:nth-child(2) { --fam: var(--fam-aeo); }
+    .family-card:nth-child(3) { --fam: var(--fam-geo); }
+    .family-top { display: flex; align-items: center; gap: 1rem; }
+    .card-heading { font-size: 1rem; font-weight: 800; }
+    .weight-tag { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+    .card-footer { font-size: 0.85rem; color: var(--text-2); }
+    .worst-list { list-style: none; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid var(--border); display: grid; gap: 0.45rem; font-size: 0.875rem; }
+    .worst-list li { position: relative; padding-left: 1rem; overflow-wrap: anywhere; }
+    .worst-list li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); }
+    .worst-list li.none::before { background: var(--ok); }
+
+    .issues-head { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+    .issues-title { font-size: 1.2rem; font-weight: 800; }
+    .group-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-2); margin: 1.25rem 0 0.5rem; }
+    .issues-empty { padding: 1.5rem; color: var(--text-2); }
+    .passing-wrap { margin-top: 1.5rem; }
+    .checks-container { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    details.check-row { border-bottom: 1px solid var(--border); }
+    details.check-row:last-child { border-bottom: 0; }
+    details.check-row[open] { background: var(--surface-hover); }
+    details.check-row:has(.status-fail) { box-shadow: inset 4px 0 0 var(--bad); }
+    summary.check-summary { display: flex; align-items: center; gap: 0.9rem; padding: 0.9rem 1.25rem; cursor: pointer; list-style: none; }
+    summary.check-summary::-webkit-details-marker { display: none; }
+    summary.check-summary::after { content: ""; width: 0.55rem; height: 0.55rem; border: solid var(--muted); border-width: 0 2px 2px 0; transform: rotate(45deg); flex: none; }
+    details[open] > summary.check-summary::after { transform: rotate(225deg); }
+    .status-badge { padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; min-width: 55px; text-align: center; }
+    .status-pass { background: var(--ok-light); color: var(--ok); }
+    .status-fail { background: var(--bad-light); color: var(--bad); }
+    .status-na { background: var(--na-light); color: var(--na); }
+    .check-content { flex: 1; min-width: 0; }
+    .check-label { font-size: 0.95rem; font-weight: 500; overflow-wrap: anywhere; }
+    .check-detail, .fix-detail { font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+    .check-meta { font-size: 0.8rem; color: var(--muted); display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+    .fix-drawer { padding: 0 1.25rem 1.1rem 5rem; font-size: 0.875rem; color: var(--text-2); }
+    .fix-drawer-card { background: var(--bg); border: 1px dashed var(--border-ui); border-radius: 8px; padding: 0.8rem 1rem; }
+
+    .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; pointer-events: none; }
+    .toast { background: var(--text); color: var(--bg); padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.9rem; font-weight: 600; transform: translateY(100px); opacity: 0; transition: transform 0.25s, opacity 0.25s; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    dialog.modal { border: 0; padding: 0; background: transparent; color: var(--text); width: min(100% - 2rem, 720px); max-width: none; margin: auto; }
+    dialog.modal::backdrop { background: rgba(20, 17, 31, 0.75); }
+    .modal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; max-height: 90vh; overflow-y: auto; }
+    .modal-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .modal-title { font-size: 1.3rem; }
+    .modal-card h3 { margin: 1rem 0 0.4rem; font-size: 1rem; }
+    .btn-close { background: none; border: 0; color: var(--text-2); cursor: pointer; font-size: 1.6rem; padding: 0 0.4rem; }
+
+    .crawl-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .crawl-title { font-size: 1.05rem; }
+    .progress-bar-bg { background: var(--ring-bg); height: 8px; border-radius: 4px; overflow: hidden; margin: 0.8rem 0; }
+    .progress-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+    table.crawl-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    table.crawl-table :is(th, td) { padding: 0.6rem; text-align: left; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+
+    .has-results header { position: static; }
+    .has-results .hero { position: sticky; top: 0; z-index: 40; padding: 0.6rem 0; background: var(--bg); box-shadow: 0 0 0 100vmax var(--bg), 0 1px 0 100vmax var(--border); clip-path: inset(0 -100vmax -1px); text-align: left; }
+    .has-results :is(.hero-badge, .hero-title, .hero-subtitle, .trust-row, .recent-strip, .mode-toggle, .keyphrase-input, .landing) { display: none; }
+    .has-results .scan-card { width: 100%; margin: 0; padding: 0; border: 0; box-shadow: none; background: none; }
+    .has-results .field-label { font-size: 0.75rem; margin-bottom: 0.25rem; }
+    .has-results .input-row { margin-bottom: 0; }
+    .has-results input.url-input { padding: 0.55rem 0.75rem 0.55rem 2.5rem; font-size: 0.95rem; }
+    .has-results .input-icon { left: 0.8rem; }
+    .has-results button.scan-btn { padding: 0 1.1rem; }
+    .has-results .error-panel { width: 100%; margin: 0.6rem 0 0; }
+
+    .landing { width: min(100%, 820px); margin: 1.5rem 0 3rem; }
+    .demo { margin: 0 0 1.5rem; }
+    .demo video { width: 100%; height: auto; border: 1px solid var(--border); border-radius: 12px; }
+    .landing h2 { font-size: 1.45rem; letter-spacing: -0.02em; line-height: 1.25; margin: 2.25rem 0 0.6rem; }
+    .landing h3 { font-size: 1.05rem; margin: 1.25rem 0 0.4rem; }
+    .landing :is(p, li, dd) { color: var(--text-2); }
+    .landing p { margin-bottom: 0.75rem; }
+    .landing :is(ol, ul) { padding-left: 1.4rem; display: grid; gap: 0.35rem; }
+    .landing .byline { font-size: 0.9rem; color: var(--muted); }
+    .terms { display: grid; gap: 0.5rem; margin-top: 1rem; }
+    .terms dt { font-weight: 800; color: var(--text); }
+    .terms dd { margin: 0 0 0.25rem; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+    .landing table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .landing :is(th, td) { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .landing tr:last-child :is(th, td) { border-bottom: 0; }
+    .landing thead th, .landing tbody th { color: var(--text); }
+    .landing pre { background: var(--bg-input); border: 1px solid var(--border); border-radius: 10px; padding: 0.9rem 1rem; overflow-x: auto; font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .landing blockquote { border-left: 4px solid var(--amber); padding: 0.5rem 1rem; margin: 1rem 0; background: var(--surface); border-radius: 0 10px 10px 0; }
+    .landing blockquote footer { font-size: 0.85rem; color: var(--muted); }
+    details.faq { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.5rem; }
+    details.faq summary { padding: 0.8rem 1rem; font-weight: 700; cursor: pointer; }
+    .grade-bands { list-style: none; padding: 0; margin: 0.5rem 0 1rem; display: grid; gap: 0.35rem; }
+    .grade-bands li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.5rem 1rem; }
+    details.faq p { padding: 0 1rem 0.9rem; margin: 0; }
+    .site-footer { border-top: 1px solid var(--border); padding: 1.5rem 0 2.5rem; color: var(--text-2); font-size: 0.9rem; text-align: center; }
+    .site-footer p { margin-top: 0.5rem; }
+
+    @media (max-width: 860px) { .family-grid { grid-template-columns: 1fr; gap: 0.75rem; } }
+    @media (max-width: 640px) {
+      h1.hero-title { line-height: 1.15; }
+      .input-row { flex-direction: column; }
+      button.scan-btn { padding: 0.8rem; justify-content: center; }
+      .fix-drawer { padding-left: 1rem; padding-right: 1rem; }
+      summary.check-summary { padding: 0.8rem 1rem; gap: 0.7rem; }
+      .score-hero { grid-template-columns: auto 1fr; gap: 0.75rem 1rem; padding: 1rem; }
+      .score-hero .site-actions { grid-column: 1 / -1; }
+      .ring-box.large { width: 84px; height: 84px; }
+      .ring-value.large { font-size: 1.8rem; }
+      .ring-box { width: 56px; height: 56px; }
+      .ring-value { font-size: 1.15rem; }
+      .results-heading { font-size: 1.2rem; }
+      .next-actions { padding: 1rem; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .ring-fill { transition: stroke-dashoffset 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); }
+      .steps li { animation: slide-in 0.3s both; }
+      .steps li:nth-child(2) { animation-delay: 60ms; }
+      .steps li:nth-child(3) { animation-delay: 120ms; }
+      .steps li:nth-child(4) { animation-delay: 180ms; }
+      .steps li:nth-child(5) { animation-delay: 240ms; }
+      .steps li:nth-child(6) { animation-delay: 300ms; }
+      .steps li:nth-child(7) { animation-delay: 360ms; }
+      .steps li:nth-child(8) { animation-delay: 420ms; }
+      .hl { animation: sweep 0.7s 0.2s ease-out both; }
+    }
+    @keyframes slide-in { from { opacity: 0; transform: translateX(-12px); } }
+    @keyframes sweep { from { background-size: 0 100%; } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .hidden { display: none !important; }
+    @media print { header, .hero, .site-actions, #watchSection, .site-footer, #recentScansWrap { display: none !important; } body { background: #fff; } .next-actions, details { break-inside: avoid; box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="logo">
+        <svg class="logo-svg" viewBox="0 0 270 64" width="135" height="32" role="img" aria-label="findable">
+          <circle cx="26" cy="26" r="17" fill="none" stroke="#6d5efc" stroke-width="8"/>
+          <path d="M39 39L56 56" stroke="#6d5efc" stroke-width="9" stroke-linecap="round"/>
+          <path d="M26 15C27 22 30 25 37 26C30 27 27 30 26 37C25 30 22 27 15 26C22 25 25 22 26 15Z" fill="#ffb020"/>
+          <text class="logo-word" x="76" y="46" font-family="system-ui, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">findable</text>
+        </svg>
+      </a>
+      <nav class="nav-actions" aria-label="Primary" data-i18n-attr="aria-label:navPrimary">
+        <a class="nav-link" href="/learn" data-i18n="navLearn">Learn</a>
+        <button type="button" class="btn-api-badge" id="btnOpenApiModal" aria-haspopup="dialog" aria-label="API and MCP tools" data-i18n-attr="aria-label:apiBtnLabel">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+          <span data-i18n="apiMcp">API &amp; MCP</span>
+        </button>
+        <button type="button" class="theme-toggle" id="themeToggle" title="Toggle color theme" aria-label="Toggle color theme" data-i18n-attr="title:themeToggle,aria-label:themeToggle">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z"/></svg>
+        </button>
+        <select id="langSelect" class="lang-select" aria-label="Language" data-i18n-attr="aria-label:language">
+          <option value="en">English</option>
+          <option value="de">Deutsch</option>
+          <option value="es">Español</option>
+          <option value="tr">Türkçe</option>
+          <option value="ru">Русский</option>
+        </select>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-badge" data-i18n="heroBadge">150+ checks · 0 signups · 100% free</div>
+      <h1 class="hero-title"><span data-i18n="heroTitle1">Is your site findable by Google and by</span> <span class="hl" data-i18n="heroTitle2">ChatGPT, Perplexity and Claude</span><span data-i18n="heroTitle3">?</span></h1>
+      <p class="hero-subtitle"><span data-i18n="heroSub">Paste a URL. findable scores the page for SEO, AEO and GEO with 150+ checks, then shows the fixes worth the most points. New to the terms? Read the</span> <a href="/learn" data-i18n="heroSubLink">plain-words guide</a>.</p>
+
+      <div class="scan-card">
+        <div class="mode-toggle">
+          <button type="button" class="mode-btn active" id="btnModePage" aria-pressed="true" data-i18n="modePage">Scan page</button>
+          <button type="button" class="mode-btn" id="btnModeSite" aria-pressed="false" data-i18n="modeSite">Crawl site</button>
+        </div>
+        <form id="scanForm">
+          <label class="field-label" for="urlInput" data-i18n="urlLabel">Page URL to audit</label>
+          <div class="input-row">
+            <div class="input-wrap">
+              <svg class="input-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+              <input type="text" inputmode="url" autocapitalize="off" id="urlInput" class="url-input" placeholder="example.com" required autocomplete="url" spellcheck="false">
+            </div>
+            <button type="submit" class="scan-btn" id="scanBtn"><span>Scan now</span></button>
+          </div>
+          <input type="text" id="keyphraseInput" class="keyphrase-input" placeholder="Focus keyphrase (optional)" aria-label="Focus keyphrase (optional)" data-i18n-attr="placeholder:keyphrase,aria-label:keyphrase">
+        </form>
+      </div>
+
+      <div id="errorPanel" class="error-panel hidden" role="alert">
+        <div class="error-panel-text">
+          <div class="error-panel-title" data-i18n="scanFailed">Scan failed</div>
+          <div id="errorText"></div>
+        </div>
+        <button type="button" class="btn-action" id="btnRetry" data-i18n="retry">Retry</button>
+      </div>
+
+      <div id="recentScansWrap" class="recent-strip hidden">
+        <div class="recent-header">
+          <span data-i18n="recentScans">Recent scans</span>
+          <button type="button" class="link-btn" id="btnClearHistory" data-i18n="clear">Clear</button>
+        </div>
+        <div id="recentList" class="recent-items"></div>
+      </div>
+
+      <p class="trust-row"><span data-i18n="trust1">150+ page checks</span><span data-i18n="trust2">SEO, AEO and GEO</span><span data-i18n="trust3">Free API and MCP</span><span id="scanCount" hidden></span></p>
+    </section>
+
+    <div id="crawlSection" class="crawl-box hidden" role="region" aria-label="Crawl progress" aria-live="polite" data-i18n-attr="aria-label:crawlRegion">
+      <h2 id="crawlStatus" class="crawl-title">Crawling internal links...</h2>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="crawlProgress"></div></div>
+      <div id="crawlTableWrap"></div>
+      <div id="crawlCommon" class="hidden"></div>
+    </div>
+
+    <p id="scanStatus" class="sr-only" role="status" aria-live="polite"></p>
+
+    <section id="agentRun" class="agent hidden" aria-hidden="true">
+      <h2 class="agent-title"><span data-i18n="agentTitle">findable is checking</span> <span id="agentHost"></span></h2>
+      <ol class="steps" id="agentSteps"></ol>
+    </section>
+
+    <div id="results" class="results-wrap hidden">
+      <section class="score-hero" aria-labelledby="resultsHeading">
+        <div class="ring-box large">
+          <svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="50"/>
+            <circle class="ring-fill" id="ringOverall" cx="60" cy="60" r="50" stroke="var(--accent)"/>
+          </svg>
+          <div class="ring-value large" id="valOverall">0</div>
+        </div>
+        <div class="hero-info">
+          <h2 class="results-heading" id="resultsHeading" tabindex="-1" data-i18n="overallScore">Overall score</h2>
+          <p class="summary-line" id="summaryLine"></p>
+          <div class="grade-row">
+            <span id="gradeOverall" class="grade-badge"></span>
+            <span id="failingSummary" class="failing-summary"></span>
+          </div>
+          <div class="site-url-title mono" id="resultUrl"></div>
+          <div class="site-meta-line" id="resultDate"></div>
+        </div>
+        <div class="site-actions">
+          <button type="button" class="btn-action" id="btnCopyReport" data-i18n="copy">Copy</button>
+          <button type="button" class="btn-action" id="btnExportJSON">JSON</button>
+          <button type="button" class="btn-action" id="btnExportCSV">CSV</button>
+          <button type="button" class="btn-action" id="btnExportMD">MD</button>
+          <button type="button" class="btn-action" id="btnExportPDF">PDF</button>
+          <div class="share-wrap">
+            <button type="button" class="btn-action" id="btnShareReport" aria-expanded="false" aria-controls="sharePanel" data-i18n="share">Share</button>
+            <div class="share-panel" id="sharePanel" hidden>
+              <div class="share-links">
+                <a class="btn-action" id="shareX" target="_blank" rel="noopener">X</a>
+                <a class="btn-action" id="shareLinkedIn" target="_blank" rel="noopener">LinkedIn</a>
+                <a class="btn-action" id="shareFacebook" target="_blank" rel="noopener">Facebook</a>
+                <button type="button" class="btn-action" id="shareNative" hidden data-i18n="more">More…</button>
+              </div>
+              <label class="share-label" for="shareText" data-i18n="shareTextLabel">Text to paste anywhere</label>
+              <textarea id="shareText" class="share-text" rows="4" readonly></textarea>
+              <div class="share-links">
+                <button type="button" class="btn-action" id="shareCopyText" data-i18n="copyText">Copy text</button>
+                <button type="button" class="btn-action" id="shareCopyLink" data-i18n="copyLink">Copy link</button>
+                <button type="button" class="btn-action" id="sharePermalink" hidden data-i18n="permaLink">Get permanent link</button>
+              </div>
+            </div>
+          </div>
+          <span id="shareStatus" class="share-status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+
+      <section class="next-actions" id="cwvSection" aria-labelledby="cwvHeading" hidden>
+        <h2 id="cwvHeading" data-i18n="cwvHeading">Page speed (mobile)</h2>
+        <p id="cwvLine" role="status" aria-live="polite"></p>
+        <ul id="cwvList" role="list"></ul>
+      </section>
+
+      <section class="next-actions" id="suggestSection" aria-labelledby="suggestHeading" hidden>
+        <h2 id="suggestHeading" data-i18n="suggestHeading">AI suggestions</h2>
+        <button type="button" class="btn-action" id="btnSuggest" data-i18n="suggestBtn">Suggest fixes with AI</button>
+        <p id="suggestLine" role="status" aria-live="polite"></p>
+        <div id="suggestOut"></div>
+      </section>
+
+      <section class="next-actions" id="watchSection" aria-labelledby="watchHeading" hidden>
+        <h2 id="watchHeading" data-i18n="watchHeading">Watch this score</h2>
+        <p data-i18n="watchLead">Get an email when your score changes. Free, no account.</p>
+        <form id="watchForm" class="watch-form">
+          <label class="share-label" for="watchEmail" data-i18n="email">Email</label>
+          <input type="email" id="watchEmail" required maxlength="254" autocomplete="email">
+          <input type="text" name="hp_x7" id="watchTrap" class="watch-trap" tabindex="-1" autocomplete="new-password" aria-hidden="true">
+          <button type="submit" class="btn-action" data-i18n="watchBtn">Watch</button>
+          <label class="watch-consent"><input type="checkbox" id="watchConsent" required> <span data-i18n="watchConsent">Email me about this site's score. Unsubscribe anytime. We never share your email.</span></label>
+          <span id="watchStatus" class="share-status" role="status" aria-live="polite"></span>
+        </form>
+      </section>
+
+      <section class="next-actions" aria-labelledby="nextHeading">
+        <h2 id="nextHeading" data-i18n="nextHeading">Your next 3 actions</h2>
+        <p id="nextLine"></p>
+        <ol class="fixes" id="topFixes" role="list"></ol>
+      </section>
+
+      <div class="family-grid">
+        <section class="family-card" aria-labelledby="famSEOTitle">
+          <div class="family-top">
+            <div class="ring-box"><svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle class="ring-fill" id="ringSEO" cx="60" cy="60" r="50" stroke="var(--fam-seo)"/></svg><div class="ring-value" id="valSEO">0</div></div>
+            <div><h3 class="card-heading" id="famSEOTitle" data-i18n="famSEO">Traditional SEO</h3><div class="weight-tag" data-i18n="weight50">50% of overall</div><div class="card-footer" id="detailSEO"></div></div>
+          </div>
+          <ul class="worst-list" id="worstSEO" aria-label="Top failing SEO checks" data-i18n-attr="aria-label:worstSEO"></ul>
+        </section>
+        <section class="family-card" aria-labelledby="famAEOTitle">
+          <div class="family-top">
+            <div class="ring-box"><svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle class="ring-fill" id="ringAEO" cx="60" cy="60" r="50" stroke="var(--fam-aeo)"/></svg><div class="ring-value" id="valAEO">0</div></div>
+            <div><h3 class="card-heading" id="famAEOTitle" data-i18n="famAEO">Answer Engine (AEO)</h3><div class="weight-tag" data-i18n="weight25">25% of overall</div><div class="card-footer" id="detailAEO"></div></div>
+          </div>
+          <ul class="worst-list" id="worstAEO" aria-label="Top failing AEO checks" data-i18n-attr="aria-label:worstAEO"></ul>
+        </section>
+        <section class="family-card" aria-labelledby="famGEOTitle">
+          <div class="family-top">
+            <div class="ring-box"><svg class="ring-svg" viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-bg" cx="60" cy="60" r="50"/><circle class="ring-fill" id="ringGEO" cx="60" cy="60" r="50" stroke="var(--fam-geo)"/></svg><div class="ring-value" id="valGEO">0</div></div>
+            <div><h3 class="card-heading" id="famGEOTitle" data-i18n="famGEO">Generative (GEO)</h3><div class="weight-tag" data-i18n="weight25">25% of overall</div><div class="card-footer" id="detailGEO"></div></div>
+          </div>
+          <ul class="worst-list" id="worstGEO" aria-label="Top failing GEO checks" data-i18n-attr="aria-label:worstGEO"></ul>
+        </section>
+      </div>
+
+      <section class="issues" aria-labelledby="issuesHeading">
+        <div class="issues-head">
+          <h2 class="issues-title" id="issuesHeading">Failing checks</h2>
+          <button type="button" class="btn-action" id="btnTogglePassing" aria-expanded="false" aria-controls="passingWrap">Show passing</button>
+        </div>
+        <div id="failingList"></div>
+        <div id="passingWrap" class="passing-wrap" hidden>
+          <h2 class="issues-title" data-i18n="passingHeading">Passing and not applicable</h2>
+          <div id="passingList"></div>
+        </div>
+      </section>
+    </div>
+
+    <article class="landing">
+      <figure id="demo" class="demo" hidden><video src="/demo.mp4" poster="/demo.jpg" width="1200" height="676" controls muted loop playsinline preload="none" aria-label="Promo: a scan of deno.com in findable, score 69, the three sub-scores and the top three fixes"></video></figure>
+      <p class="byline">By <span>Nadim Tuhin</span> · Published <time datetime="2026-10-14">14 October 2026</time> · Updated <time datetime="2026-10-14">14 October 2026</time></p>
+
+      <h2 id="about">What is findable?</h2>
+      <p>findable is a free scanner that scores one web page on traditional SEO, answer engine optimization (AEO) and generative engine optimization (GEO). It runs 150+ page checks, gives you one overall score from 0 to 100, and ranks the fixes by how many points each one recovers.</p>
+      <dl class="terms">
+        <dt>SEO</dt><dd>Search engine optimization. Make the page easy for a search crawler to fetch, read and rank.</dd>
+        <dt>AEO</dt><dd>Answer engine optimization. Shape the page so an answer box or chat tool can lift a short, correct answer.</dd>
+        <dt>GEO</dt><dd>Generative engine optimization. Give an AI model facts, authorship and sources it can cite with confidence.</dd>
+      </dl>
+
+      <h2>How is SEO different from AEO and GEO?</h2>
+      <p>SEO gets your page found and ranked by a crawler. AEO gets a short passage of it chosen as the answer. GEO gets your facts and your name cited inside a generated reply. SEO comes first, because a page that cannot be fetched or read cannot be answered from or cited.</p>
+      <div class="table-wrap" role="region" aria-label="SEO, AEO and GEO compared" tabindex="0">
+        <table>
+          <caption class="sr-only">SEO, AEO and GEO compared</caption>
+          <thead><tr><th scope="col">Family</th><th scope="col">SEO</th><th scope="col">AEO</th><th scope="col">GEO</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Reader</th><td>Search crawler</td><td>Answer box or chat tool</td><td>Generative AI model</td></tr>
+            <tr><th scope="row">It wins when</th><td>The page is crawlable and clear</td><td>A passage answers a question directly</td><td>Facts, authors and sources are explicit</td></tr>
+            <tr><th scope="row">Page checks</th><td>26 to 36</td><td>14 to 17</td><td>14 to 19</td></tr>
+            <tr><th scope="row">Weight in score</th><td>50 of 100</td><td>25 of 100</td><td>25 of 100</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="quickstart">How do I check my site in three steps?</h2>
+      <ol>
+        <li>Paste a page URL into the scan box at the top of this page.</li>
+        <li>Watch the agent work through the fetch, SEO, AEO and GEO checks.</li>
+        <li>Do the top three fixes, then scan again to see your score move.</li>
+      </ol>
+
+      <h2 id="developers">How do I run findable from a terminal, an AI agent or an API?</h2>
+      <h3>Command line</h3>
+      <pre><code>go install github.com/nadimtuhin/findable/cmd/findable@latest
+findable https://example.com</code></pre>
+      <h3>MCP server for AI agents</h3>
+      <pre><code>npx findable-mcp</code></pre>
+      <h3>REST API</h3>
+      <pre><code>curl -s -X POST https://findable.page/api/scan \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://example.com"}'</code></pre>
+
+      <h2>How is the score calculated?</h2>
+      <p>The overall score blends three family scores: SEO counts for half, AEO and GEO for a quarter each. Every failing check is worth its family weight divided by that family's check count. That is why the top fixes you see are ranked by recoverable points.</p>
+      <blockquote>
+        <p>A fast, unified open-source website auditor for Traditional SEO, Answer Engine Optimization (AEO), and Generative Engine Optimization (GEO).</p>
+        <footer>From the <a href="https://github.com/nadimtuhin/findable#readme">findable README</a></footer>
+      </blockquote>
+      <p>The basics are the same as in <a href="https://developers.google.com/search/docs/fundamentals/seo-starter-guide">Google's SEO starter guide</a>. Read the <a href="/learn">plain-words guides</a> for what each check means.</p>
+      <p>findable can also check your <a href="https://llmstxt.org/">llms.txt</a> file. It speaks the <a href="https://modelcontextprotocol.io/">Model Context Protocol</a>, and the structured data it looks for follows the <a href="https://schema.org/">schema.org</a> vocabulary.</p>
+
+      <h2>Key takeaways</h2>
+      <ul>
+        <li>One scan scores SEO, AEO and GEO together.</li>
+        <li>Fixes are ranked by the points they recover, so you start with the biggest win.</li>
+        <li>It runs in the browser, the terminal, an AI agent or a CI job.</li>
+      </ul>
+
+      <h2 id="grades" data-i18n="scoreHeading">What do the grades mean?</h2>
+      <p data-i18n="scoreIntro">The overall score is SEO at 50%, AEO at 25% and GEO at 25%, rounded to a whole number. Each family score is the share of its applicable checks that pass. The overall score maps to a grade:</p>
+      <ul class="grade-bands">
+        <li><strong>90 to 100</strong>: <span data-i18n="gradeA">A+ Excellent</span></li>
+        <li><strong>80 to 89</strong>: <span data-i18n="gradeB">A Good</span></li>
+        <li><strong>70 to 79</strong>: <span data-i18n="gradeC">B Fair</span></li>
+        <li><strong>60 to 69</strong>: <span data-i18n="gradeD">C Needs work</span></li>
+        <li><strong>0 to 59</strong>: <span data-i18n="gradeF">Critical issues</span></li>
+      </ul>
+      <p data-i18n="scoreNote">Only the overall score gets a grade. Fixes are ranked by the points they recover.</p>
+
+      <h2 data-i18n="faqHeading">Frequently asked questions</h2>
+      <details class="faq"><summary data-i18n="faq1q">Is findable free?</summary><p data-i18n="faq1a">Yes. It costs $0, needs no signup and the code is MIT licensed on GitHub.</p></details>
+      <details class="faq"><summary data-i18n="faq5q">What do SEO, AEO and GEO mean?</summary><p data-i18n="faq5a">SEO makes a page easy for a search crawler to fetch and rank. AEO shapes it so an answer box or chat tool can lift a short, correct answer. GEO gives an AI model facts, authors and sources it can cite.</p></details>
+      <details class="faq"><summary data-i18n="faq7q">How is the score computed?</summary><p data-i18n="faq7a">The overall score is SEO at 50%, AEO at 25% and GEO at 25%, rounded to a whole number from 0 to 100. Each family score is the share of its applicable checks that pass. There are 160 checks: 98 SEO, 35 AEO and 27 GEO.</p></details>
+      <details class="faq"><summary data-i18n="faq6q">What does findable store?</summary><p data-i18n="faq6a">A scan fetches the public URL you submit, plus its robots.txt and llms.txt. Scan results are not cached. Share previews are cached for 1 hour, and speed test results and share cards for up to 24 hours. The optional speed test sends the URL to Google PageSpeed. Share links carry the score in the link itself. Reports you create with Get permanent link are stored for 90 days. If you opt in to watch a site, your email and the site host are stored. There are no ads, trackers or accounts.</p></details>
+      <details class="faq"><summary data-i18n="faq8q">Is there a WordPress plugin?</summary><p data-i18n="faq8a">Yes, and it is free. It scans a post or page from the editor, adds a score column and bulk-scans up to 20 of your latest posts. Fix All prints a meta description, a canonical if WordPress doesn't already print one, Open Graph and JSON-LD tags in the page head without editing your content, and Undo restores the previous state.</p></details>
+      <details class="faq"><summary data-i18n="faq4q">How do I use it from a terminal or an AI agent?</summary><p data-i18n="faq4a">Install the Go CLI with go install github.com/nadimtuhin/findable/cmd/findable@latest, then run findable https://example.com. Run findable -mcp, or npx -y findable-mcp, to give an AI agent the audit tools. Use -format sarif or the GitHub Action to fail a CI build under a score you choose.</p></details>
+      <details class="faq"><summary data-i18n="faq3q">Can it scan more than one page?</summary><p data-i18n="faq3a">Yes. Crawl Site mode (beta) scans your start page plus internal links, up to 20 pages. The CLI can go further, for example findable -crawl -limit 100 to scan 100 pages.</p></details>
+      <details class="faq"><summary data-i18n="faq2q">Does findable ask ChatGPT, Perplexity, Claude or Google AI about my page?</summary><p data-i18n="faq2a">No. It checks the signals on your page that answer engines can use, such as structured data, direct answers, clear authorship and sources. It does not query any AI product.</p></details>
+
+      <h2 id="contact">How do I contact the author?</h2>
+      <p>Open an issue on <a href="https://github.com/nadimtuhin/findable/issues">GitHub</a> with a bug, a question or a check you want added. The source is at <a href="https://github.com/nadimtuhin/findable">github.com/nadimtuhin/findable</a>.</p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <nav aria-label="Footer">
+        <a href="/about" data-i18n="footAbout">About</a> · <a href="/#contact" data-i18n="footContact">Contact</a> · <a href="/learn" data-i18n="navLearn">Learn</a> · <a href="/privacy" data-i18n="footPrivacy">Privacy</a> · <a href="/terms" data-i18n="footTerms">Terms</a> · <a href="https://github.com/nadimtuhin/findable">GitHub</a> · <a href="https://github.com/nadimtuhin/findable/issues" data-i18n="footIssues">Issues</a>
+      </nav>
+      <p data-i18n="footLicense">findable is MIT licensed. Built by Nadim Tuhin.</p>
+    </div>
+  </footer>
+
+  <div class="toast-container"><div id="toast" class="toast" role="status" aria-live="polite"></div></div>
+
+  <dialog id="apiModal" class="modal" aria-labelledby="apiModalTitle">
+    <div class="modal-card">
+      <div class="modal-title-row">
+        <h2 class="modal-title" id="apiModalTitle" data-i18n="apiTitle">API and MCP tools</h2>
+        <button type="button" class="btn-close" id="btnCloseApiModal" aria-label="Close dialog" data-i18n-attr="aria-label:closeDialog">&times;</button>
+      </div>
+      <p data-i18n="apiIntro">Run findable from CI, a terminal or an AI agent. Command line and API examples are on the main page.</p>
+      <h3 data-i18n="apiMcpHeading">MCP in Claude, Cursor or Windsurf</h3>
+      <pre><code>{
+  "mcpServers": {
+    "findable": { "command": "npx", "args": ["-y", "findable-mcp"] }
+  }
+}</code></pre>
+    </div>
+  </dialog>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+    const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const I18N = {
+      en: {
+        navLearn: "Learn", apiMcp: "API & MCP", apiBtnLabel: "API and MCP tools", themeToggle: "Toggle color theme", language: "Language", navPrimary: "Primary",
+        heroBadge: "150+ checks · 0 signups · 100% free",
+        heroTitle1: "Is your site findable by Google and by", heroTitle2: "ChatGPT, Perplexity and Claude", heroTitle3: "?",
+        heroSub: "Paste a URL. findable scores the page for SEO, AEO and GEO with 150+ checks, then shows the fixes worth the most points. New to the terms? Read the",
+        heroSubLink: "plain-words guide",
+        modePage: "Scan page", modeSite: "Crawl site", urlLabel: "Page URL to audit", scanNow: "Scan now",
+        keyphrase: "Focus keyphrase (optional)", scanFailed: "Scan failed", retry: "Retry", recentScans: "Recent scans", clear: "Clear",
+        scanCount: "{n} pages scanned",
+        trust1: "150+ page checks", trust2: "SEO, AEO and GEO", trust3: "Free API and MCP", crawlRegion: "Crawl progress",
+        agentTitle: "findable is checking", overallScore: "Overall score",
+        copy: "Copy", share: "Share", more: "More…", shareTextLabel: "Text to paste anywhere", copyText: "Copy text", copyLink: "Copy link",
+        cwvHeading: "Page speed (mobile)", watchHeading: "Watch this score", watchLead: "Get an email when your score changes. Free, no account.",
+        email: "Email", watchBtn: "Watch", watchConsent: "Email me about this site's score. Unsubscribe anytime. We never share your email.",
+        nextHeading: "Your next 3 actions", famSEO: "Traditional SEO", famAEO: "Answer Engine (AEO)", famGEO: "Generative (GEO)",
+        weight50: "50% of overall", weight25: "25% of overall",
+        worstSEO: "Top failing SEO checks", worstAEO: "Top failing AEO checks", worstGEO: "Top failing GEO checks",
+        passingHeading: "Passing and not applicable", footAbout: "About", footContact: "Contact", footIssues: "Issues", footPrivacy: "Privacy", footTerms: "Terms", commonIssuesHeading: "Most common issues", commonIssuesCount: "{c} of {n} pages",
+        footLicense: "findable is MIT licensed. Built by Nadim Tuhin.",
+        faqHeading: "Frequently asked questions",
+        faq1q: "Is findable free?", faq1a: "Yes. It costs $0, needs no signup and the code is MIT licensed on GitHub.",
+        faq2q: "Does findable ask ChatGPT, Perplexity, Claude or Google AI about my page?", faq2a: "No. It checks the signals on your page that answer engines can use, such as structured data, direct answers, clear authorship and sources. It does not query any AI product.",
+        faq3q: "Can it scan more than one page?", faq3a: "Yes. Crawl Site mode (beta) scans your start page plus internal links, up to 20 pages. The CLI can go further, for example findable -crawl -limit 100 to scan 100 pages.",
+        faq4q: "How do I use it from a terminal or an AI agent?", faq4a: "Install the Go CLI with go install github.com/nadimtuhin/findable/cmd/findable@latest, then run findable https://example.com. Run findable -mcp, or npx -y findable-mcp, to give an AI agent the audit tools. Use -format sarif or the GitHub Action to fail a CI build under a score you choose.",
+        faq5q: "What do SEO, AEO and GEO mean?", faq5a: "SEO makes a page easy for a search crawler to fetch and rank. AEO shapes it so an answer box or chat tool can lift a short, correct answer. GEO gives an AI model facts, authors and sources it can cite.",
+        faq6q: "What does findable store?", faq6a: "A scan fetches the public URL you submit, plus its robots.txt and llms.txt. Scan results are not cached. Share previews are cached for 1 hour, and speed test results and share cards for up to 24 hours. The optional speed test sends the URL to Google PageSpeed. Share links carry the score in the link itself. Reports you create with Get permanent link are stored for 90 days. If you opt in to watch a site, your email and the site host are stored. There are no ads, trackers or accounts.",
+        faq7q: "How is the score computed?", faq7a: "The overall score is SEO at 50%, AEO at 25% and GEO at 25%, rounded to a whole number from 0 to 100. Each family score is the share of its applicable checks that pass. There are 160 checks: 98 SEO, 35 AEO and 27 GEO.",
+        faq8q: "Is there a WordPress plugin?", faq8a: "Yes, and it is free. It scans a post or page from the editor, adds a score column and bulk-scans up to 20 of your latest posts. Fix All prints a meta description, a canonical if WordPress doesn't already print one, Open Graph and JSON-LD tags in the page head without editing your content, and Undo restores the previous state.",
+        scoreHeading: "What do the grades mean?", scoreIntro: "The overall score is SEO at 50%, AEO at 25% and GEO at 25%, rounded to a whole number. Each family score is the share of its applicable checks that pass. The overall score maps to a grade:", scoreNote: "Only the overall score gets a grade. Fixes are ranked by the points they recover.",
+        apiTitle: "API and MCP tools", apiIntro: "Run findable from CI, a terminal or an AI agent. Command line and API examples are on the main page.",
+        apiMcpHeading: "MCP in Claude, Cursor or Windsurf", closeDialog: "Close dialog",
+        scanning: "Scanning...", crawling: "Crawling...",
+        stepFetch: "Fetching the page", stepSEO: "Checking SEO", stepAEO: "Checking AEO", stepGEO: "Checking GEO", stepRank: "Ranking your fixes",
+        stepFor: "{step} for {host}", scanningHost: "Scanning {host}", apiStatus: "The scan API answered with status {n}", historyCleared: "History cleared",
+        gradeA: "A+ Excellent", gradeB: "A Good", gradeC: "B Fair", gradeD: "C Needs work", gradeF: "Critical issues",
+        head90: "Findable. Nicely done.", head70: "Mostly findable, with quick wins left", head50: "Findable in parts. Three fixes move the needle", head0: "Hard to find right now. Start with three fixes",
+        allPass: "Every applicable check passes. Re-scan after each release to keep it that way.",
+        nextOne: "This fix recovers {got} of the {all} points you are missing.", nextMany: "These {n} fixes recover {got} of the {all} points you are missing.",
+        pts: "{n} pts", answerEngines: "Answer engines this helps",
+        cwvTesting: "Testing page speed with Google PageSpeed Insights (takes about 20 seconds)…", cwvScore: "Performance {score}/100 · {passed} of {total} vitals good", cwvFail: "Page speed test failed",
+        suggestHeading: "AI suggestions", suggestBtn: "Suggest fixes with AI", suggestWorking: "Writing suggestions…", suggestFail: "Could not get suggestions", suggestTitle: "Title", suggestDescription: "Meta description", suggestFaq: "FAQ",
+        docTitle: "{host} scored {n}/100 · findable", audited: "Audited {date}", keyphraseLine: " · keyphrase: {kp}",
+        summaryLine: "Overall score: {n} out of 100.", failingSummary: "{f} of {a} checks failing", famDetail: "{p} / {t} passed",
+        issuesCount: "Failing checks ({n})", noFailingAll: "No failing checks. Every applicable check passes.", noPassing: "No passing checks yet.", noFailingShort: "No failing checks",
+        groupTitle: "{fam} · {n} · {pts} each", statusPass: "PASS", statusFail: "FAIL", statusNA: "N/A", worth: "worth {pts}", howToFix: "How to fix: ",
+        showPassing: "Show passing ({n})", hidePassing: "Hide passing ({n})",
+        scanComplete: "Scan complete for {url}: overall {o} of 100, {f} failing checks.",
+        jsonExported: "JSON report exported", csvExported: "CSV report exported", mdExported: "Markdown report exported", summaryCopied: "Summary copied to clipboard",
+        copyReport: "findable audit for {url}:\nOverall: {o}/100 | SEO: {s} | AEO: {a} | GEO: {g}\nGenerated via findable.page",
+        watchSaving: "Saving…", watchOk: "You're on the list. We'll email you when the score moves.", watchFail: "Could not save, try again",
+        shareSummary: "{host} scores {n}/100 on findable (SEO {s}, AEO {a}, GEO {g}).", shareAsk: "How findable is your site by Google and AI?",
+        shareFull: "Full report: {link}", shareTitle: "findable report", textCopied: "Text copied", linkCopied: "Link copied", copyFail: "Could not copy", permaLink: "Get permanent link", permaWorking: "Creating link…", permaCopied: "Permanent link copied (kept 90 days)", permaFail: "Could not create the link",
+        crawlStart: "Scanning start page...", crawlPage: "Crawling page {i} of {n}: {url}", crawlWait: "Pausing for the rate limit, then page {i} of {n}…",
+        crawlDone: "Crawl complete! Scanned {n} pages.", colOverall: "Overall",
+      },
+      de: {
+        navLearn: "Lernen", apiMcp: "API & MCP", apiBtnLabel: "API- und MCP-Tools", themeToggle: "Farbschema wechseln", language: "Sprache", navPrimary: "Hauptnavigation",
+        heroBadge: "150+ Checks · 0 Anmeldungen · 100 % kostenlos",
+        heroTitle1: "Wird deine Website von Google und von", heroTitle2: "ChatGPT, Perplexity und Claude", heroTitle3: " gefunden?",
+        heroSub: "URL einfügen. findable bewertet die Seite mit über 150 Checks für SEO, AEO und GEO und zeigt dir die Fixes, die die meisten Punkte bringen. Neu bei den Begriffen? Lies den",
+        heroSubLink: "Klartext-Leitfaden",
+        modePage: "Seite scannen", modeSite: "Website crawlen", urlLabel: "Zu prüfende Seiten-URL", scanNow: "Jetzt scannen",
+        keyphrase: "Fokus-Keyphrase (optional)", scanFailed: "Scan fehlgeschlagen", retry: "Erneut versuchen", recentScans: "Letzte Scans", clear: "Löschen",
+        scanCount: "{n} Seiten gescannt",
+        trust1: "150+ Seiten-Checks", trust2: "SEO, AEO und GEO", trust3: "Kostenlose API und MCP", crawlRegion: "Crawl-Fortschritt",
+        agentTitle: "findable prüft", overallScore: "Gesamtwert",
+        copy: "Kopieren", share: "Teilen", more: "Mehr…", shareTextLabel: "Text zum Einfügen überall", copyText: "Text kopieren", copyLink: "Link kopieren",
+        cwvHeading: "Seitengeschwindigkeit (mobil)", watchHeading: "Diesen Wert beobachten", watchLead: "Erhalte eine E-Mail, wenn sich dein Wert ändert. Kostenlos, ohne Konto.",
+        email: "E-Mail", watchBtn: "Beobachten", watchConsent: "Sende mir eine E-Mail zum Wert dieser Website. Jederzeit abbestellbar. Wir geben deine E-Mail nie weiter.",
+        nextHeading: "Deine nächsten 3 Aktionen", famSEO: "Klassisches SEO", famAEO: "Antwortmaschinen (AEO)", famGEO: "Generativ (GEO)",
+        weight50: "50 % vom Gesamtwert", weight25: "25 % vom Gesamtwert",
+        worstSEO: "Wichtigste fehlgeschlagene SEO-Checks", worstAEO: "Wichtigste fehlgeschlagene AEO-Checks", worstGEO: "Wichtigste fehlgeschlagene GEO-Checks",
+        passingHeading: "Bestanden und nicht anwendbar", footAbout: "Über uns", footContact: "Kontakt", footIssues: "Issues", footPrivacy: "Datenschutz", footTerms: "Nutzungsbedingungen", commonIssuesHeading: "Häufigste Probleme", commonIssuesCount: "{c} von {n} Seiten",
+        footLicense: "findable steht unter MIT-Lizenz. Entwickelt von Nadim Tuhin.",
+        faqHeading: "Häufige Fragen",
+        faq1q: "Ist findable kostenlos?", faq1a: "Ja. Es kostet 0 $, braucht keine Anmeldung, und der Code steht unter MIT-Lizenz auf GitHub.",
+        faq2q: "Fragt findable ChatGPT, Perplexity, Claude oder Google AI nach meiner Seite?", faq2a: "Nein. Es prüft die Signale auf deiner Seite, die Antwortmaschinen nutzen können, etwa strukturierte Daten, direkte Antworten, klare Urheberschaft und Quellen. Es fragt kein KI-Produkt ab.",
+        faq3q: "Kann es mehr als eine Seite scannen?", faq3a: "Ja. Der Modus „Website crawlen“ (Beta) scannt deine Startseite plus interne Links, bis zu 20 Seiten. Die CLI schafft mehr, zum Beispiel findable -crawl -limit 100 für 100 Seiten.",
+        faq4q: "Wie nutze ich es im Terminal oder mit einem KI-Agenten?", faq4a: "Installiere die Go-CLI mit go install github.com/nadimtuhin/findable/cmd/findable@latest und starte findable https://example.com. Mit findable -mcp oder npx -y findable-mcp bekommt ein KI-Agent die Audit-Tools. Mit -format sarif oder der GitHub Action schlägt ein CI-Build unter einem gewählten Wert fehl.",
+        faq5q: "Was bedeuten SEO, AEO und GEO?", faq5a: "SEO macht eine Seite für einen Suchcrawler leicht abrufbar und rankbar. AEO formt sie so, dass ein Antwortfeld oder Chat-Tool eine kurze, richtige Antwort entnehmen kann. GEO liefert einem KI-Modell Fakten, Autoren und Quellen, die es zitieren kann.",
+        faq6q: "Was speichert findable?", faq6a: "Ein Scan lädt die öffentliche URL, die du angibst, plus robots.txt und llms.txt. Scan-Ergebnisse werden nicht zwischengespeichert. Share-Vorschauen werden 1 Stunde, Speedtest-Ergebnisse und Share-Karten bis zu 24 Stunden zwischengespeichert. Der optionale Speedtest sendet die URL an Google PageSpeed. Share-Links tragen den Wert im Link selbst. Berichte, die du mit „Dauerhaften Link holen“ erstellst, werden 90 Tage gespeichert. Wenn du dich für die Beobachtung einer Website anmeldest, werden deine E-Mail und der Host gespeichert. Es gibt keine Werbung, keine Tracker und keine Konten.",
+        faq7q: "Wie wird der Wert berechnet?", faq7a: "Der Gesamtwert besteht zu 50 % aus SEO, zu 25 % aus AEO und zu 25 % aus GEO, gerundet auf eine ganze Zahl von 0 bis 100. Der Wert jeder Familie ist der Anteil bestandener unter den anwendbaren Checks. Es gibt 160 Checks: 98 SEO, 35 AEO und 27 GEO.",
+        faq8q: "Gibt es ein WordPress-Plugin?", faq8a: "Ja, und es ist kostenlos. Es scannt einen Beitrag oder eine Seite im Editor, zeigt eine Wert-Spalte und scannt gesammelt bis zu 20 deiner neuesten Beiträge. Fix All gibt Meta-Beschreibung, ein Canonical (falls WordPress keines ausgibt), Open Graph und JSON-LD im Seitenkopf aus, ohne deine Inhalte zu ändern. Undo stellt den vorherigen Zustand wieder her.",
+        scoreHeading: "Was bedeuten die Noten?", scoreIntro: "Der Gesamtwert besteht zu 50 % aus SEO, zu 25 % aus AEO und zu 25 % aus GEO, gerundet auf eine ganze Zahl. Der Wert jeder Familie ist der Anteil bestandener unter den anwendbaren Checks. Der Gesamtwert ergibt eine Note:", scoreNote: "Nur der Gesamtwert bekommt eine Note. Korrekturen sind nach den Punkten sortiert, die sie zurückholen.",
+        apiTitle: "API- und MCP-Tools", apiIntro: "Nutze findable in CI, im Terminal oder mit einem KI-Agenten. Beispiele für Kommandozeile und API stehen auf der Hauptseite.",
+        apiMcpHeading: "MCP in Claude, Cursor oder Windsurf", closeDialog: "Dialog schließen",
+        scanning: "Scanne...", crawling: "Crawle...",
+        stepFetch: "Seite wird abgerufen", stepSEO: "SEO wird geprüft", stepAEO: "AEO wird geprüft", stepGEO: "GEO wird geprüft", stepRank: "Fixes werden gereiht",
+        stepFor: "{step}: {host}", scanningHost: "{host} wird gescannt", apiStatus: "Die Scan-API antwortete mit Status {n}", historyCleared: "Verlauf gelöscht",
+        gradeA: "A+ Ausgezeichnet", gradeB: "A Gut", gradeC: "B Ordentlich", gradeD: "C Verbesserungsbedarf", gradeF: "Kritische Probleme",
+        head90: "Gut zu finden. Starke Arbeit.", head70: "Meist gut zu finden, ein paar schnelle Gewinne bleiben", head50: "Teilweise auffindbar. Drei Fixes bringen den Durchbruch", head0: "Aktuell schwer zu finden. Starte mit drei Fixes",
+        allPass: "Alle anwendbaren Checks bestanden. Scanne nach jedem Release erneut, damit es so bleibt.",
+        nextOne: "Dieser Fix bringt {got} der {all} fehlenden Punkte zurück.", nextMany: "Diese {n} Fixes bringen {got} der {all} fehlenden Punkte zurück.",
+        pts: "{n} Pkt.", answerEngines: "Antwortmaschinen, denen das hilft",
+        cwvTesting: "Seitengeschwindigkeit wird mit Google PageSpeed Insights getestet (dauert etwa 20 Sekunden)…", cwvScore: "Leistung {score}/100 · {passed} von {total} Vitalwerten gut", cwvFail: "Geschwindigkeitstest fehlgeschlagen",
+        suggestHeading: "KI-Vorschläge", suggestBtn: "Fixes mit KI vorschlagen", suggestWorking: "Vorschläge werden geschrieben…", suggestFail: "Vorschläge konnten nicht geladen werden", suggestTitle: "Titel", suggestDescription: "Meta-Beschreibung", suggestFaq: "FAQ",
+        docTitle: "{host} erreicht {n}/100 · findable", audited: "Geprüft am {date}", keyphraseLine: " · Keyphrase: {kp}",
+        summaryLine: "Gesamtwert: {n} von 100.", failingSummary: "{f} von {a} Checks fehlgeschlagen", famDetail: "{p} / {t} bestanden",
+        issuesCount: "Fehlgeschlagene Checks ({n})", noFailingAll: "Keine fehlgeschlagenen Checks. Alle anwendbaren Checks bestanden.", noPassing: "Noch keine bestandenen Checks.", noFailingShort: "Keine fehlgeschlagenen Checks",
+        groupTitle: "{fam} · {n} · je {pts}", statusPass: "OK", statusFail: "FEHLER", statusNA: "k. A.", worth: "Wert {pts}", howToFix: "So behebst du es: ",
+        showPassing: "Bestandene anzeigen ({n})", hidePassing: "Bestandene ausblenden ({n})",
+        scanComplete: "Scan für {url} abgeschlossen: Gesamt {o} von 100, {f} fehlgeschlagene Checks.",
+        jsonExported: "JSON-Bericht exportiert", csvExported: "CSV-Bericht exportiert", mdExported: "Markdown-Bericht exportiert", summaryCopied: "Zusammenfassung in die Zwischenablage kopiert",
+        copyReport: "findable-Audit für {url}:\nGesamt: {o}/100 | SEO: {s} | AEO: {a} | GEO: {g}\nErstellt mit findable.page",
+        watchSaving: "Speichere…", watchOk: "Du bist auf der Liste. Wir mailen dir, wenn sich der Wert ändert.", watchFail: "Speichern fehlgeschlagen, bitte erneut versuchen",
+        shareSummary: "{host} erreicht {n}/100 bei findable (SEO {s}, AEO {a}, GEO {g}).", shareAsk: "Wie gut findet man deine Website bei Google und KI?",
+        shareFull: "Ganzer Bericht: {link}", shareTitle: "findable-Bericht", textCopied: "Text kopiert", linkCopied: "Link kopiert", copyFail: "Kopieren fehlgeschlagen", permaLink: "Dauerhaften Link holen", permaWorking: "Link wird erstellt…", permaCopied: "Dauerhafter Link kopiert (90 Tage gespeichert)", permaFail: "Link konnte nicht erstellt werden",
+        crawlStart: "Startseite wird gescannt...", crawlPage: "Seite {i} von {n} wird gecrawlt: {url}", crawlWait: "Pause wegen Ratenlimit, dann Seite {i} von {n}…",
+        crawlDone: "Crawl abgeschlossen! {n} Seiten gescannt.", colOverall: "Gesamt",
+      },
+      es: {
+        navLearn: "Aprender", apiMcp: "API & MCP", apiBtnLabel: "Herramientas API y MCP", themeToggle: "Cambiar tema de color", language: "Idioma", navPrimary: "Principal",
+        heroBadge: "Más de 150 comprobaciones · 0 registros · 100 % gratis",
+        heroTitle1: "¿Pueden encontrar tu sitio Google y", heroTitle2: "ChatGPT, Perplexity y Claude", heroTitle3: "?",
+        heroSub: "Pega una URL. findable puntúa la página en SEO, AEO y GEO con más de 150 comprobaciones y te muestra las correcciones que más puntos valen. ¿Nuevo con los términos? Lee la",
+        heroSubLink: "guía en palabras sencillas",
+        modePage: "Escanear página", modeSite: "Rastrear sitio", urlLabel: "URL de la página a auditar", scanNow: "Escanear ahora",
+        keyphrase: "Frase clave principal (opcional)", scanFailed: "Falló el escaneo", retry: "Reintentar", recentScans: "Escaneos recientes", clear: "Borrar",
+        scanCount: "{n} páginas analizadas",
+        trust1: "Más de 150 comprobaciones", trust2: "SEO, AEO y GEO", trust3: "API y MCP gratis", crawlRegion: "Progreso del rastreo",
+        agentTitle: "findable está revisando", overallScore: "Puntuación global",
+        copy: "Copiar", share: "Compartir", more: "Más…", shareTextLabel: "Texto para pegar donde quieras", copyText: "Copiar texto", copyLink: "Copiar enlace",
+        cwvHeading: "Velocidad de página (móvil)", watchHeading: "Vigila esta puntuación", watchLead: "Recibe un correo cuando cambie tu puntuación. Gratis, sin cuenta.",
+        email: "Correo", watchBtn: "Vigilar", watchConsent: "Quiero recibir un correo sobre la puntuación de este sitio. Puedes darte de baja cuando quieras. Nunca compartimos tu correo.",
+        nextHeading: "Tus próximas 3 acciones", famSEO: "SEO tradicional", famAEO: "Motores de respuesta (AEO)", famGEO: "Generativo (GEO)",
+        weight50: "50 % del total", weight25: "25 % del total",
+        worstSEO: "Principales comprobaciones SEO fallidas", worstAEO: "Principales comprobaciones AEO fallidas", worstGEO: "Principales comprobaciones GEO fallidas",
+        passingHeading: "Superadas y no aplicables", footAbout: "Acerca de", footContact: "Contacto", footIssues: "Incidencias", footPrivacy: "Privacidad", footTerms: "Términos", commonIssuesHeading: "Problemas más comunes", commonIssuesCount: "{c} de {n} páginas",
+        footLicense: "findable tiene licencia MIT. Creado por Nadim Tuhin.",
+        faqHeading: "Preguntas frecuentes",
+        faq1q: "¿findable es gratis?", faq1a: "Sí. Cuesta 0 $, no pide registro y el código tiene licencia MIT en GitHub.",
+        faq2q: "¿findable le pregunta a ChatGPT, Perplexity, Claude o Google AI sobre mi página?", faq2a: "No. Revisa las señales de tu página que los motores de respuesta pueden usar, como datos estructurados, respuestas directas, autoría clara y fuentes. No consulta ningún producto de IA.",
+        faq3q: "¿Puede escanear más de una página?", faq3a: "Sí. El modo Rastrear sitio (beta) escanea tu página de inicio y sus enlaces internos, hasta 20 páginas. La CLI llega más lejos, por ejemplo findable -crawl -limit 100 para escanear 100 páginas.",
+        faq4q: "¿Cómo lo uso desde una terminal o un agente de IA?", faq4a: "Instala la CLI de Go con go install github.com/nadimtuhin/findable/cmd/findable@latest y ejecuta findable https://example.com. Con findable -mcp, o npx -y findable-mcp, un agente de IA obtiene las herramientas de auditoría. Con -format sarif o la GitHub Action, una compilación de CI falla por debajo de la puntuación que elijas.",
+        faq5q: "¿Qué significan SEO, AEO y GEO?", faq5a: "SEO hace que una página sea fácil de descargar y posicionar para un rastreador de búsqueda. AEO la estructura para que un cuadro de respuestas o una herramienta de chat extraiga una respuesta breve y correcta. GEO da a un modelo de IA datos, autores y fuentes que puede citar.",
+        faq6q: "¿Qué guarda findable?", faq6a: "Un escaneo descarga la URL pública que envías, más su robots.txt y llms.txt. Los resultados del escaneo no se guardan en caché. Las vistas previas para compartir se guardan 1 hora, y los resultados de la prueba de velocidad y las tarjetas para compartir hasta 24 horas. La prueba de velocidad opcional envía la URL a Google PageSpeed. Los enlaces para compartir llevan la puntuación en el propio enlace. Si te suscribes para vigilar un sitio, se guardan tu correo y el host del sitio. No hay anuncios, rastreadores ni cuentas. Los informes que creas con Obtener enlace permanente se guardan 90 días.",
+        faq7q: "¿Cómo se calcula la puntuación?", faq7a: "La puntuación global es SEO al 50 %, AEO al 25 % y GEO al 25 %, redondeada a un número entero de 0 a 100. La puntuación de cada familia es la proporción de comprobaciones aplicables que se superan. Hay 160 comprobaciones: 98 de SEO, 35 de AEO y 27 de GEO.",
+        faq8q: "¿Hay un plugin de WordPress?", faq8a: "Sí, y es gratuito. Escanea una entrada o página desde el editor, añade una columna de puntuación y escanea en bloque hasta 20 de tus últimas entradas. Fix All imprime meta descripción, un canonical si WordPress no imprime ya uno, Open Graph y JSON-LD en la cabecera sin editar tu contenido, y Undo restaura el estado anterior.",
+        scoreHeading: "¿Qué significan las notas?", scoreIntro: "La puntuación global es SEO al 50 %, AEO al 25 % y GEO al 25 %, redondeada a un número entero. La puntuación de cada familia es la proporción de comprobaciones aplicables que se superan. La puntuación global se traduce en una nota:", scoreNote: "Solo la puntuación global recibe una nota. Las correcciones se ordenan por los puntos que recuperan.",
+        apiTitle: "Herramientas API y MCP", apiIntro: "Ejecuta findable desde CI, una terminal o un agente de IA. Los ejemplos de línea de comandos y API están en la página principal.",
+        apiMcpHeading: "MCP en Claude, Cursor o Windsurf", closeDialog: "Cerrar diálogo",
+        scanning: "Escaneando...", crawling: "Rastreando...",
+        stepFetch: "Descargando la página", stepSEO: "Revisando SEO", stepAEO: "Revisando AEO", stepGEO: "Revisando GEO", stepRank: "Ordenando tus correcciones",
+        stepFor: "{step}: {host}", scanningHost: "Escaneando {host}", apiStatus: "La API de escaneo respondió con el estado {n}", historyCleared: "Historial borrado",
+        gradeA: "A+ Excelente", gradeB: "A Bueno", gradeC: "B Aceptable", gradeD: "C Necesita mejoras", gradeF: "Problemas críticos",
+        head90: "Fácil de encontrar. Buen trabajo.", head70: "Bastante fácil de encontrar, con mejoras rápidas pendientes", head50: "Se encuentra a medias. Tres correcciones marcan la diferencia", head0: "Ahora es difícil de encontrar. Empieza con tres correcciones",
+        allPass: "Todas las comprobaciones aplicables se superan. Vuelve a escanear tras cada versión para mantenerlo.",
+        nextOne: "Esta corrección recupera {got} de los {all} puntos que te faltan.", nextMany: "Estas {n} correcciones recuperan {got} de los {all} puntos que te faltan.",
+        pts: "{n} pts", answerEngines: "Motores de respuesta a los que ayuda",
+        cwvTesting: "Probando la velocidad con Google PageSpeed Insights (tarda unos 20 segundos)…", cwvScore: "Rendimiento {score}/100 · {passed} de {total} métricas vitales buenas", cwvFail: "Falló la prueba de velocidad",
+        suggestHeading: "Sugerencias con IA", suggestBtn: "Sugerir arreglos con IA", suggestWorking: "Escribiendo sugerencias…", suggestFail: "No se pudieron obtener sugerencias", suggestTitle: "Título", suggestDescription: "Meta descripción", suggestFaq: "Preguntas frecuentes",
+        docTitle: "{host} obtiene {n}/100 · findable", audited: "Auditado el {date}", keyphraseLine: " · frase clave: {kp}",
+        summaryLine: "Puntuación global: {n} de 100.", failingSummary: "{f} de {a} comprobaciones fallan", famDetail: "{p} / {t} superadas",
+        issuesCount: "Comprobaciones fallidas ({n})", noFailingAll: "Ninguna comprobación falla. Todas las aplicables se superan.", noPassing: "Aún no hay comprobaciones superadas.", noFailingShort: "Ninguna comprobación falla",
+        groupTitle: "{fam} · {n} · {pts} cada una", statusPass: "OK", statusFail: "FALLO", statusNA: "N/D", worth: "vale {pts}", howToFix: "Cómo corregirlo: ",
+        showPassing: "Mostrar superadas ({n})", hidePassing: "Ocultar superadas ({n})",
+        scanComplete: "Escaneo de {url} completado: global {o} de 100, {f} comprobaciones fallidas.",
+        jsonExported: "Informe JSON exportado", csvExported: "Informe CSV exportado", mdExported: "Informe Markdown exportado", summaryCopied: "Resumen copiado al portapapeles",
+        copyReport: "Auditoría de findable para {url}:\nGlobal: {o}/100 | SEO: {s} | AEO: {a} | GEO: {g}\nGenerado con findable.page",
+        watchSaving: "Guardando…", watchOk: "Estás en la lista. Te escribiremos cuando cambie la puntuación.", watchFail: "No se pudo guardar, inténtalo de nuevo",
+        shareSummary: "{host} obtiene {n}/100 en findable (SEO {s}, AEO {a}, GEO {g}).", shareAsk: "¿Qué tan fácil de encontrar es tu sitio en Google y en la IA?",
+        shareFull: "Informe completo: {link}", shareTitle: "Informe de findable", textCopied: "Texto copiado", linkCopied: "Enlace copiado", copyFail: "No se pudo copiar", permaLink: "Obtener enlace permanente", permaWorking: "Creando enlace…", permaCopied: "Enlace permanente copiado (se guarda 90 días)", permaFail: "No se pudo crear el enlace",
+        crawlStart: "Escaneando la página de inicio...", crawlPage: "Rastreando página {i} de {n}: {url}", crawlWait: "Pausa por el límite de peticiones, luego página {i} de {n}…",
+        crawlDone: "¡Rastreo completo! Se escanearon {n} páginas.", colOverall: "Global",
+      },
+      tr: {
+        navLearn: "Öğren", apiMcp: "API & MCP", apiBtnLabel: "API ve MCP araçları", themeToggle: "Renk temasını değiştir", language: "Dil", navPrimary: "Ana",
+        heroBadge: "150+ kontrol · 0 kayıt · %100 ücretsiz",
+        heroTitle1: "Siteni Google ve", heroTitle2: "ChatGPT, Perplexity ve Claude", heroTitle3: " bulabiliyor mu?",
+        heroSub: "Bir URL yapıştır. findable sayfayı 150'den fazla kontrolle SEO, AEO ve GEO açısından puanlar, sonra en çok puan getiren düzeltmeleri gösterir. Terimlere yabancı mısın? Şunu oku:",
+        heroSubLink: "sade dille rehber",
+        modePage: "Sayfayı tara", modeSite: "Siteyi tara", urlLabel: "Denetlenecek sayfa URL'si", scanNow: "Şimdi tara",
+        keyphrase: "Odak anahtar ifade (isteğe bağlı)", scanFailed: "Tarama başarısız", retry: "Yeniden dene", recentScans: "Son taramalar", clear: "Temizle",
+        scanCount: "{n} sayfa tarandı",
+        trust1: "150+ sayfa kontrolü", trust2: "SEO, AEO ve GEO", trust3: "Ücretsiz API ve MCP", crawlRegion: "Tarama ilerlemesi",
+        agentTitle: "findable şunu kontrol ediyor:", overallScore: "Genel puan",
+        copy: "Kopyala", share: "Paylaş", more: "Daha fazla…", shareTextLabel: "Her yere yapıştırılacak metin", copyText: "Metni kopyala", copyLink: "Bağlantıyı kopyala",
+        cwvHeading: "Sayfa hızı (mobil)", watchHeading: "Bu puanı izle", watchLead: "Puanın değişince e-posta al. Ücretsiz, hesap gerekmez.",
+        email: "E-posta", watchBtn: "İzle", watchConsent: "Bu sitenin puanı hakkında bana e-posta gönder. İstediğin zaman abonelikten çık. E-postanı asla paylaşmayız.",
+        nextHeading: "Sıradaki 3 adımın", famSEO: "Geleneksel SEO", famAEO: "Cevap motoru (AEO)", famGEO: "Üretken (GEO)",
+        weight50: "Genel puanın %50'si", weight25: "Genel puanın %25'i",
+        worstSEO: "En çok başarısız olan SEO kontrolleri", worstAEO: "En çok başarısız olan AEO kontrolleri", worstGEO: "En çok başarısız olan GEO kontrolleri",
+        passingHeading: "Geçenler ve uygulanamayanlar", footAbout: "Hakkında", footContact: "İletişim", footIssues: "Sorunlar", footPrivacy: "Gizlilik", footTerms: "Koşullar", commonIssuesHeading: "En yaygın sorunlar", commonIssuesCount: "{n} sayfadan {c}",
+        footLicense: "findable MIT lisanslıdır. Nadim Tuhin tarafından yapıldı.",
+        faqHeading: "Sık sorulan sorular",
+        faq1q: "findable ücretsiz mi?", faq1a: "Evet. Maliyeti 0 $, kayıt gerektirmez ve kod GitHub'da MIT lisanslıdır.",
+        faq2q: "findable sayfam hakkında ChatGPT, Perplexity, Claude veya Google AI'a soruyor mu?", faq2a: "Hayır. Sayfandaki cevap motorlarının kullanabileceği sinyallere bakar: yapılandırılmış veri, doğrudan cevaplar, net yazar bilgisi ve kaynaklar. Hiçbir yapay zekâ ürününü sorgulamaz.",
+        faq3q: "Birden fazla sayfayı tarayabilir mi?", faq3a: "Evet. Siteyi tara modu (beta) başlangıç sayfanı ve iç bağlantıları tarar, en fazla 20 sayfa. CLI daha ileri gidebilir, örneğin 100 sayfa taramak için findable -crawl -limit 100.",
+        faq4q: "Terminalden veya bir yapay zeka ajanından nasıl kullanırım?", faq4a: "Go CLI'ı go install github.com/nadimtuhin/findable/cmd/findable@latest ile kur ve findable https://example.com çalıştır. findable -mcp veya npx -y findable-mcp ile bir yapay zeka ajanı denetim araçlarını alır. -format sarif veya GitHub Action ile puan seçtiğin sayının altına düşünce CI derlemesi başarısız olur.",
+        faq5q: "SEO, AEO ve GEO ne demek?", faq5a: "SEO, bir sayfanın arama tarayıcısı tarafından kolay çekilmesini ve sıralanmasını sağlar. AEO, cevap kutusunun veya sohbet aracının kısa ve doğru bir cevap alabilmesi için sayfayı şekillendirir. GEO, bir yapay zeka modeline alıntılayabileceği bilgi, yazar ve kaynak verir.",
+        faq6q: "findable neyi saklar?", faq6a: "Tarama, gönderdiğin herkese açık URL'yi ve robots.txt ile llms.txt dosyalarını çeker. Tarama sonuçları önbelleğe alınmaz. Paylaşım önizlemeleri 1 saat, hız testi sonuçları ve paylaşım kartları en fazla 24 saat önbellekte tutulur. İsteğe bağlı hız testi URL'yi Google PageSpeed'e gönderir. Paylaşım bağlantıları puanı bağlantının içinde taşır. Bir siteyi izlemeye katılırsan e-postan ve site adresi saklanır. Reklam, izleyici ve hesap yoktur. Kalıcı bağlantı al ile oluşturduğun raporlar 90 gün saklanır.",
+        faq7q: "Puan nasıl hesaplanır?", faq7a: "Genel puan %50 SEO, %25 AEO ve %25 GEO'dur ve 0 ile 100 arasında tam sayıya yuvarlanır. Her ailenin puanı, uygulanabilir kontrollerden geçenlerin oranıdır. Toplam 160 kontrol var: 98 SEO, 35 AEO ve 27 GEO.",
+        faq8q: "WordPress eklentisi var mı?", faq8a: "Evet ve ücretsiz. Düzenleyiciden bir yazıyı veya sayfayı tarar, puan sütunu ekler ve son yazılarından en fazla 20'sini toplu tarar. Fix All, içeriğini değiştirmeden sayfa başlığına meta açıklama, WordPress zaten yazmıyorsa canonical, Open Graph ve JSON-LD yazar; Undo önceki duruma döndürür.",
+        scoreHeading: "Notlar ne anlama gelir?", scoreIntro: "Genel puan %50 SEO, %25 AEO ve %25 GEO'dur ve tam sayıya yuvarlanır. Her ailenin puanı, uygulanabilir kontrollerden geçenlerin oranıdır. Genel puan bir nota çevrilir:", scoreNote: "Yalnızca genel puana not verilir. Düzeltmeler, geri kazandırdıkları puana göre sıralanır.",
+        apiTitle: "API ve MCP araçları", apiIntro: "findable'ı CI'dan, terminalden veya bir yapay zekâ ajanından çalıştır. Komut satırı ve API örnekleri ana sayfada.",
+        apiMcpHeading: "Claude, Cursor veya Windsurf'te MCP", closeDialog: "İletişim kutusunu kapat",
+        scanning: "Taranıyor...", crawling: "Site taranıyor...",
+        stepFetch: "Sayfa getiriliyor", stepSEO: "SEO kontrol ediliyor", stepAEO: "AEO kontrol ediliyor", stepGEO: "GEO kontrol ediliyor", stepRank: "Düzeltmeler sıralanıyor",
+        stepFor: "{step}: {host}", scanningHost: "{host} taranıyor", apiStatus: "Tarama API'si {n} durumuyla yanıt verdi", historyCleared: "Geçmiş temizlendi",
+        gradeA: "A+ Mükemmel", gradeB: "A İyi", gradeC: "B Orta", gradeD: "C Çalışma gerek", gradeF: "Kritik sorunlar",
+        head90: "Kolay bulunuyor. Güzel iş.", head70: "Çoğunlukla bulunabilir, hızlı kazanımlar var", head50: "Kısmen bulunabilir. Üç düzeltme fark yaratır", head0: "Şu an bulunması zor. Üç düzeltmeyle başla",
+        allPass: "Uygulanabilir tüm kontroller geçti. Böyle kalması için her sürümden sonra yeniden tara.",
+        nextOne: "Bu düzeltme eksik {all} puanın {got} kadarını geri kazandırır.", nextMany: "Bu {n} düzeltme eksik {all} puanın {got} kadarını geri kazandırır.",
+        pts: "{n} puan", answerEngines: "Bunun yardımcı olduğu cevap motorları",
+        cwvTesting: "Sayfa hızı Google PageSpeed Insights ile test ediliyor (yaklaşık 20 saniye sürer)…", cwvScore: "Performans {score}/100 · {total} temel metrikten {passed} tanesi iyi", cwvFail: "Sayfa hızı testi başarısız",
+        suggestHeading: "Yapay zeka önerileri", suggestBtn: "Yapay zeka ile düzeltme öner", suggestWorking: "Öneriler yazılıyor…", suggestFail: "Öneriler alınamadı", suggestTitle: "Başlık", suggestDescription: "Meta açıklama", suggestFaq: "SSS",
+        docTitle: "{host} {n}/100 puan aldı · findable", audited: "Denetim: {date}", keyphraseLine: " · anahtar ifade: {kp}",
+        summaryLine: "Genel puan: 100 üzerinden {n}.", failingSummary: "{a} kontrolün {f} tanesi başarısız", famDetail: "{p} / {t} geçti",
+        issuesCount: "Başarısız kontroller ({n})", noFailingAll: "Başarısız kontrol yok. Uygulanabilir tüm kontroller geçti.", noPassing: "Henüz geçen kontrol yok.", noFailingShort: "Başarısız kontrol yok",
+        groupTitle: "{fam} · {n} · her biri {pts}", statusPass: "GEÇTİ", statusFail: "KALDI", statusNA: "YOK", worth: "değeri {pts}", howToFix: "Nasıl düzeltilir: ",
+        showPassing: "Geçenleri göster ({n})", hidePassing: "Geçenleri gizle ({n})",
+        scanComplete: "{url} taraması tamamlandı: genel 100 üzerinden {o}, {f} başarısız kontrol.",
+        jsonExported: "JSON raporu dışa aktarıldı", csvExported: "CSV raporu dışa aktarıldı", mdExported: "Markdown raporu dışa aktarıldı", summaryCopied: "Özet panoya kopyalandı",
+        copyReport: "{url} için findable denetimi:\nGenel: {o}/100 | SEO: {s} | AEO: {a} | GEO: {g}\nfindable.page ile oluşturuldu",
+        watchSaving: "Kaydediliyor…", watchOk: "Listedesin. Puan değişince sana e-posta göndereceğiz.", watchFail: "Kaydedilemedi, tekrar dene",
+        shareSummary: "{host}, findable'da {n}/100 aldı (SEO {s}, AEO {a}, GEO {g}).", shareAsk: "Siten Google ve yapay zekâ tarafından ne kadar bulunabilir?",
+        shareFull: "Tam rapor: {link}", shareTitle: "findable raporu", textCopied: "Metin kopyalandı", linkCopied: "Bağlantı kopyalandı", copyFail: "Kopyalanamadı", permaLink: "Kalıcı bağlantı al", permaWorking: "Bağlantı oluşturuluyor…", permaCopied: "Kalıcı bağlantı kopyalandı (90 gün saklanır)", permaFail: "Bağlantı oluşturulamadı",
+        crawlStart: "Başlangıç sayfası taranıyor...", crawlPage: "{n} sayfadan {i}. sayfa taranıyor: {url}", crawlWait: "İstek sınırı için bekleniyor, sonra {n} sayfadan {i}. sayfa…",
+        crawlDone: "Tarama tamamlandı! {n} sayfa tarandı.", colOverall: "Genel",
+      },
+      ru: {
+        navLearn: "Узнать больше", apiMcp: "API & MCP", apiBtnLabel: "Инструменты API и MCP", themeToggle: "Сменить цветовую тему", language: "Язык", navPrimary: "Основная",
+        heroBadge: "150+ проверок · 0 регистраций · 100% бесплатно",
+        heroTitle1: "Находят ли твой сайт Google и", heroTitle2: "ChatGPT, Perplexity и Claude", heroTitle3: "?",
+        heroSub: "Вставь URL. findable оценит страницу по SEO, AEO и GEO более чем 150 проверками и покажет исправления, которые дают больше всего баллов. Не знаком с терминами? Прочитай",
+        heroSubLink: "объяснение простыми словами",
+        modePage: "Сканировать страницу", modeSite: "Обойти сайт", urlLabel: "URL страницы для аудита", scanNow: "Сканировать",
+        keyphrase: "Ключевая фраза (необязательно)", scanFailed: "Сканирование не удалось", retry: "Повторить", recentScans: "Недавние сканирования", clear: "Очистить",
+        scanCount: "Проверено страниц: {n}",
+        trust1: "150+ проверок страницы", trust2: "SEO, AEO и GEO", trust3: "Бесплатные API и MCP", crawlRegion: "Ход обхода",
+        agentTitle: "findable проверяет", overallScore: "Общая оценка",
+        copy: "Копировать", share: "Поделиться", more: "Ещё…", shareTextLabel: "Текст, который можно вставить куда угодно", copyText: "Копировать текст", copyLink: "Копировать ссылку",
+        cwvHeading: "Скорость страницы (мобильная)", watchHeading: "Следить за оценкой", watchLead: "Получай письмо, когда оценка меняется. Бесплатно, без аккаунта.",
+        email: "Эл. почта", watchBtn: "Следить", watchConsent: "Присылай мне письма об оценке этого сайта. Отписаться можно в любой момент. Мы никому не передаём твою почту.",
+        nextHeading: "Твои 3 следующих шага", famSEO: "Классическое SEO", famAEO: "Ответные системы (AEO)", famGEO: "Генеративные системы (GEO)",
+        weight50: "50% общей оценки", weight25: "25% общей оценки",
+        worstSEO: "Главные проваленные проверки SEO", worstAEO: "Главные проваленные проверки AEO", worstGEO: "Главные проваленные проверки GEO",
+        passingHeading: "Пройденные и неприменимые", footAbout: "О проекте", footContact: "Контакты", footIssues: "Задачи", footPrivacy: "Конфиденциальность", footTerms: "Условия", commonIssuesHeading: "Самые частые проблемы", commonIssuesCount: "{c} из {n} страниц",
+        footLicense: "findable распространяется по лицензии MIT. Автор: Nadim Tuhin.",
+        faqHeading: "Частые вопросы",
+        faq1q: "findable бесплатный?", faq1a: "Да. Он стоит 0 $, не требует регистрации, а код открыт под лицензией MIT на GitHub.",
+        faq2q: "findable спрашивает ChatGPT, Perplexity, Claude или Google AI о моей странице?", faq2a: "Нет. Он проверяет сигналы на твоей странице, которые могут использовать ответные системы: структурированные данные, прямые ответы, понятное авторство и источники. Ни один ИИ-продукт он не опрашивает.",
+        faq3q: "Можно ли просканировать больше одной страницы?", faq3a: "Да. Режим «Обойти сайт» (бета) сканирует стартовую страницу и внутренние ссылки, до 20 страниц. CLI может больше, например findable -crawl -limit 100 просканирует 100 страниц.",
+        faq4q: "Как использовать из терминала или с ИИ-агентом?", faq4a: "Установи Go CLI командой go install github.com/nadimtuhin/findable/cmd/findable@latest и запусти findable https://example.com. С findable -mcp или npx -y findable-mcp ИИ-агент получает инструменты аудита. С -format sarif или GitHub Action сборка CI падает, если оценка ниже выбранной.",
+        faq5q: "Что значат SEO, AEO и GEO?", faq5a: "SEO делает страницу удобной для загрузки и ранжирования поисковым роботом. AEO строит её так, чтобы блок ответов или чат-инструмент мог взять короткий верный ответ. GEO даёт ИИ-модели факты, авторов и источники, которые она может процитировать.",
+        faq6q: "Что хранит findable?", faq6a: "Сканирование загружает указанный публичный URL, а также его robots.txt и llms.txt. Результаты сканирования не кэшируются. Превью для публикации кэшируются на 1 час, результаты теста скорости и карточки - до 24 часов. Необязательный тест скорости отправляет URL в Google PageSpeed. Ссылки для публикации несут оценку в самой ссылке. Если ты подписался на наблюдение за сайтом, хранятся твой email и хост сайта. Нет рекламы, трекеров и аккаунтов. Отчёты, которые ты создаёшь кнопкой «Постоянная ссылка», хранятся 90 дней.",
+        faq7q: "Как считается оценка?", faq7a: "Общая оценка: SEO 50%, AEO 25% и GEO 25%, округляется до целого числа от 0 до 100. Оценка каждого семейства - доля пройденных среди применимых проверок. Всего 160 проверок: 98 SEO, 35 AEO и 27 GEO.",
+        faq8q: "Есть ли плагин для WordPress?", faq8a: "Да, и он бесплатный. Он сканирует запись или страницу в редакторе, добавляет колонку с оценкой и массово сканирует до 20 последних записей. Fix All выводит в head страницы мета-описание, canonical (если WordPress ещё не выводит свой), Open Graph и JSON-LD, не меняя твой контент, а Undo возвращает прежнее состояние.",
+        scoreHeading: "Что означают оценки?", scoreIntro: "Общая оценка: SEO 50%, AEO 25% и GEO 25%, округляется до целого числа. Оценка каждого семейства - доля пройденных среди применимых проверок. Общая оценка переводится в уровень:", scoreNote: "Уровень присваивается только общей оценке. Исправления ранжируются по очкам, которые они возвращают.",
+        apiTitle: "Инструменты API и MCP", apiIntro: "Запускай findable из CI, терминала или ИИ-агента. Примеры для командной строки и API есть на главной странице.",
+        apiMcpHeading: "MCP в Claude, Cursor или Windsurf", closeDialog: "Закрыть диалог",
+        scanning: "Сканирование...", crawling: "Обход...",
+        stepFetch: "Загружаем страницу", stepSEO: "Проверяем SEO", stepAEO: "Проверяем AEO", stepGEO: "Проверяем GEO", stepRank: "Ранжируем исправления",
+        stepFor: "{step}: {host}", scanningHost: "Сканирование {host}", apiStatus: "API сканирования ответил статусом {n}", historyCleared: "История очищена",
+        gradeA: "A+ Отлично", gradeB: "A Хорошо", gradeC: "B Неплохо", gradeD: "C Нужна доработка", gradeF: "Критические проблемы",
+        head90: "Легко найти. Отличная работа.", head70: "В основном находится, остались быстрые победы", head50: "Находится частично. Три исправления изменят картину", head0: "Сейчас найти трудно. Начни с трёх исправлений",
+        allPass: "Все применимые проверки пройдены. Сканируй заново после каждого релиза, чтобы так и оставалось.",
+        nextOne: "Это исправление вернёт {got} из {all} недостающих баллов.", nextMany: "Эти {n} исправления вернут {got} из {all} недостающих баллов.",
+        pts: "{n} б.", answerEngines: "Ответные системы, которым это помогает",
+        cwvTesting: "Проверяем скорость через Google PageSpeed Insights (около 20 секунд)…", cwvScore: "Производительность {score}/100 · хороших показателей: {passed} из {total}", cwvFail: "Не удалось проверить скорость страницы",
+        suggestHeading: "Подсказки ИИ", suggestBtn: "Предложить исправления с ИИ", suggestWorking: "Пишем подсказки…", suggestFail: "Не удалось получить подсказки", suggestTitle: "Заголовок", suggestDescription: "Мета-описание", suggestFaq: "Частые вопросы",
+        docTitle: "{host}: {n}/100 · findable", audited: "Аудит от {date}", keyphraseLine: " · ключевая фраза: {kp}",
+        summaryLine: "Общая оценка: {n} из 100.", failingSummary: "Не пройдено проверок: {f} из {a}", famDetail: "Пройдено {p} / {t}",
+        issuesCount: "Проваленные проверки ({n})", noFailingAll: "Проваленных проверок нет. Все применимые проверки пройдены.", noPassing: "Пройденных проверок пока нет.", noFailingShort: "Проваленных проверок нет",
+        groupTitle: "{fam} · {n} · по {pts}", statusPass: "ОК", statusFail: "ОШИБКА", statusNA: "Н/Д", worth: "стоит {pts}", howToFix: "Как исправить: ",
+        showPassing: "Показать пройденные ({n})", hidePassing: "Скрыть пройденные ({n})",
+        scanComplete: "Сканирование {url} завершено: общая оценка {o} из 100, проваленных проверок: {f}.",
+        jsonExported: "Отчёт JSON экспортирован", csvExported: "Отчёт CSV экспортирован", mdExported: "Отчёт Markdown экспортирован", summaryCopied: "Сводка скопирована в буфер обмена",
+        copyReport: "Аудит findable для {url}:\nОбщая: {o}/100 | SEO: {s} | AEO: {a} | GEO: {g}\nСоздано в findable.page",
+        watchSaving: "Сохраняем…", watchOk: "Ты в списке. Напишем, когда оценка изменится.", watchFail: "Не удалось сохранить, попробуй ещё раз",
+        shareSummary: "{host}: {n}/100 в findable (SEO {s}, AEO {a}, GEO {g}).", shareAsk: "Насколько твой сайт находят Google и ИИ?",
+        shareFull: "Полный отчёт: {link}", shareTitle: "Отчёт findable", textCopied: "Текст скопирован", linkCopied: "Ссылка скопирована", copyFail: "Не удалось скопировать", permaLink: "Постоянная ссылка", permaWorking: "Создаём ссылку…", permaCopied: "Постоянная ссылка скопирована (хранится 90 дней)", permaFail: "Не удалось создать ссылку",
+        crawlStart: "Сканируем стартовую страницу...", crawlPage: "Обход страницы {i} из {n}: {url}", crawlWait: "Пауза из-за лимита запросов, затем страница {i} из {n}…",
+        crawlDone: "Обход завершён! Просканировано страниц: {n}.", colOverall: "Итого",
+      },
+    };
+    const LANG_STORAGE_KEY = "seoscore_lang";
+    function detectLang() {
+      let saved = null;
+      try { saved = localStorage.getItem(LANG_STORAGE_KEY); } catch {}
+      if (Object.prototype.hasOwnProperty.call(I18N, saved)) return saved;
+      const browser = (navigator.language || "").slice(0, 2).toLowerCase();
+      return Object.prototype.hasOwnProperty.call(I18N, browser) ? browser : "en";
+    }
+    let lang = detectLang();
+    const t = (key, vars = {}) => (I18N[lang][key] ?? I18N.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => vars[name] ?? "");
+    function applyStatic() {
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach(node => { node.textContent = t(node.dataset.i18n); });
+      document.querySelectorAll("[data-i18n-attr]").forEach(node => {
+        for (const pair of node.dataset.i18nAttr.split(",")) {
+          const [attr, key] = pair.split(":");
+          node.setAttribute(attr, t(key));
+        }
+      });
+      if (scanTotal !== null) paintScanCount();
+    }
+    var scanTotal = null;
+    function paintScanCount() {
+      const node = $("scanCount");
+      node.hidden = scanTotal === null;
+      if (scanTotal !== null) node.textContent = t("scanCount", { n: scanTotal.toLocaleString(lang) });
+    }
+    applyStatic();
+
+    $("themeToggle").addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      try { localStorage.setItem("seoscore_theme", next); } catch {}
+    });
+
+    const SCHEME = /^[a-z][a-z0-9+.-]*:\/\//i;
+    function withScheme(value) {
+      const v = value.trim();
+      return v && !SCHEME.test(v) ? "https://" + v : v;
+    }
+
+    function showToast(msg) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2800);
+    }
+
+    const apiModal = $("apiModal");
+    const btnOpenApi = $("btnOpenApiModal");
+    btnOpenApi.addEventListener("click", () => apiModal.showModal());
+    $("btnCloseApiModal").addEventListener("click", () => apiModal.close());
+    apiModal.addEventListener("click", (e) => { if (e.target === apiModal) apiModal.close(); });
+    apiModal.addEventListener("close", () => btnOpenApi.focus());
+
+    function recentHost(url) {
+      try {
+        const u = new URL(url);
+        return u.protocol === "http:" || u.protocol === "https:" ? u.hostname : null;
+      } catch { return null; }
+    }
+    function validRecent(item) {
+      return item && typeof item.url === "string" && recentHost(item.url) !== null &&
+        typeof item.score === "number" && Number.isFinite(item.score) && item.score >= 0 && item.score <= 100;
+    }
+    function getRecentScans() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem("seoscore_recent") || "[]");
+        return Array.isArray(parsed) ? parsed.filter(validRecent) : [];
+      } catch { return []; }
+    }
+    function saveRecentScan(url, score) {
+      const list = getRecentScans().filter(x => x.url !== url);
+      list.unshift({ url, score, date: new Date().toISOString() });
+      try { localStorage.setItem("seoscore_recent", JSON.stringify(list.filter(validRecent).slice(0, 6))); } catch {}
+      renderRecentScans();
+    }
+    function renderRecentScans() {
+      const list = getRecentScans();
+      $("recentScansWrap").classList.toggle("hidden", list.length === 0);
+      const container = $("recentList");
+      container.replaceChildren();
+      list.forEach(item => {
+        const btn = el("button", "recent-pill");
+        btn.type = "button";
+        btn.append(el("span", "recent-score", String(Math.round(item.score))), el("span", "", recentHost(item.url)));
+        btn.addEventListener("click", () => {
+          $("urlInput").value = item.url;
+          $("scanForm").requestSubmit();
+        });
+        container.append(btn);
+      });
+    }
+    $("btnClearHistory").addEventListener("click", () => {
+      try { localStorage.removeItem("seoscore_recent"); } catch {}
+      renderRecentScans();
+      showToast(t("historyCleared"));
+    });
+    renderRecentScans();
+
+    let activeMode = "page";
+    const btnPage = $("btnModePage");
+    const btnSite = $("btnModeSite");
+    function setMode(mode) {
+      activeMode = mode;
+      btnPage.classList.toggle("active", mode === "page");
+      btnPage.setAttribute("aria-pressed", String(mode === "page"));
+      btnSite.classList.toggle("active", mode === "site");
+      btnSite.setAttribute("aria-pressed", String(mode === "site"));
+    }
+    btnPage.addEventListener("click", () => {
+      setMode("page");
+      $("crawlSection").classList.add("hidden");
+    });
+    btnSite.addEventListener("click", () => setMode("site"));
+
+    let currentScan = null;
+    let allChecks = [];
+    let scannedUrl = "";
+    let auditedAt = new Date();
+    let auditedKeyphrase = "";
+
+    const scanForm = $("scanForm");
+    const scanBtn = $("scanBtn");
+    const urlInput = $("urlInput");
+    const keyphraseInput = $("keyphraseInput");
+    const scanStatus = $("scanStatus");
+    const errorPanel = $("errorPanel");
+
+    const DEFAULT_ADVICE = "Optimize this signal according to current search and AI answer guidelines.";
+    const checkTextByLang = {};
+    const checkText = c => (lang === "en" ? null : checkTextByLang[lang]?.[c.id] ?? null);
+    const checkTitle = c => checkText(c)?.name ?? c.label;
+    const checkAdvice = c => checkText(c)?.fix ?? fixAdvice[c.id] ?? DEFAULT_ADVICE;
+    function englishDetail(c, tag, cls) {
+      if (!checkText(c)) return null;
+      const node = el(tag, cls, c.label);
+      node.lang = "en";
+      return node;
+    }
+    async function loadCheckText() {
+      const wanted = lang;
+      if (wanted === "en" || checkTextByLang[wanted]) return;
+      try {
+        const resp = await fetch("/i18n/" + wanted + ".json");
+        if (resp.ok) checkTextByLang[wanted] = await resp.json();
+      } catch {}
+    }
+    const fixAdvice = {
+      title_exists: "Add a distinct title tag inside head that names the page's purpose.",
+      title_length: "Keep the title between 30 and 60 characters so search engines do not truncate it.",
+      desc_exists: "Add a meta description with a short summary of the page.",
+      desc_length: "Aim for 120 to 160 characters in the meta description.",
+      h1_exists: "Use exactly one h1 that states the primary topic.",
+      heading_hierarchy: "Nest headings in order (h1, h2, h3) without skipping levels.",
+      word_count: "Expand thin content to at least 300 words to show topical depth.",
+      canonical: "Add a canonical link tag to prevent duplicate content.",
+      og_image: "Add an og:image meta tag with an absolute image URL.",
+      og_url: "Add an og:url meta tag with the page's canonical address.",
+      internal_links: "Link to at least two other pages on your site with descriptive anchor text.",
+      external_links: "Link out to at least one trustworthy source that backs up a claim.",
+      img_alt: "Give every image a descriptive alt attribute.",
+      img_dimensions: "Set width and height on images to prevent layout shift.",
+      jsonld: "Add a JSON-LD block that describes the page, such as Organization or SoftwareApplication.",
+      aeo_structured_data: "Add JSON-LD structured data so AI systems can read the page's facts.",
+      aeo_faq: "Add FAQPage structured data with short question and answer pairs.",
+      aeo_direct_answers: "Put a 30 to 80 word direct answer right under each question heading.",
+      aeo_question_headings: "Phrase some headings as the questions people ask, such as What is...?",
+      aeo_definition_lists: "Use dl, dt and dd to define key terms.",
+      aeo_numbered_steps: "Use an ol for step-by-step instructions.",
+      aeo_collapsible: "Put FAQs in details and summary elements.",
+      aeo_summary: "Add a Key takeaways section that recaps the page in a few lines.",
+      geo_statistics_density: "Include concrete numbers, measurements and benchmarks you can stand behind.",
+      geo_expert_quotes: "Use blockquote with an attributed source to show expertise.",
+      geo_citations: "Link to reputable external sources that back up your claims.",
+      geo_definitions: "Define key terms in plain sentences such as X is a...",
+      geo_author_schema: "Add Person schema for the author, or an author field in Article schema.",
+      geo_org_schema: "Declare an Organization in JSON-LD with your name, URL and logo.",
+      geo_knowledge_graph: "Add sameAs links to Wikidata, LinkedIn or Wikipedia in your Organization schema.",
+      aeo_tables: "Add an HTML table that compares options or lists data.",
+      geo_data_viz: "Add an HTML table that compares options or lists data.",
+      geo_passage_citability: "Write self-contained 40 to 120 word paragraphs that answer one question on their own.",
+      geo_trust: "Link to About and Contact pages so readers see who stands behind the site.",
+      geo_time_element: "Mark up published and updated dates with the time element."
+    };
+
+    const ENGINES = { AEO: ["ChatGPT", "Perplexity", "Claude"], GEO: ["Google AI", "Claude"] };
+    function engineBadges(family) {
+      const names = ENGINES[family];
+      if (!names) return null;
+      const box = el("span", "engines");
+      box.setAttribute("role", "group");
+      box.setAttribute("aria-label", t("answerEngines"));
+      names.forEach(n => box.append(el("span", "eng", n)));
+      return box;
+    }
+
+    const STEP_KEYS = ["stepFetch", "stepSEO", "stepAEO", "stepGEO", "stepRank"];
+    let stepTimer = 0;
+    function paintSteps(active) {
+      [...$("agentSteps").children].forEach((li, i) => { li.dataset.state = i < active ? "done" : i === active ? "run" : "wait"; });
+    }
+    function startAgent(host) {
+      $("agentHost").textContent = host;
+      $("agentSteps").replaceChildren(...STEP_KEYS.map(key => {
+        const li = el("li");
+        const mark = el("span", "mark");
+        mark.setAttribute("aria-hidden", "true");
+        li.append(mark, el("span", "", t(key)));
+        return li;
+      }));
+      $("agentRun").classList.remove("hidden");
+      $("agentRun").scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "nearest" });
+      paintSteps(0);
+      if (reduceMotion()) return;
+      let step = 0;
+      stepTimer = setInterval(() => {
+        step = Math.min(step + 1, STEP_KEYS.length - 1);
+        paintSteps(step);
+        scanStatus.textContent = t("stepFor", { step: t(STEP_KEYS[step]), host });
+      }, 700);
+    }
+    function stopAgent() {
+      clearInterval(stepTimer);
+      $("agentRun").classList.add("hidden");
+    }
+    async function finishAgent() {
+      clearInterval(stepTimer);
+      paintSteps(STEP_KEYS.length);
+      if (!reduceMotion()) await new Promise(resolve => setTimeout(resolve, 400));
+    }
+
+    function setBusy(busy) {
+      $("results").setAttribute("aria-busy", String(busy));
+      if (busy) {
+        $("results").classList.add("hidden");
+        const host = recentHost(urlInput.value.trim()) || urlInput.value.trim();
+        scanStatus.textContent = t("scanningHost", { host });
+        startAgent(host);
+      } else {
+        stopAgent();
+      }
+    }
+
+    function showError(message) {
+      $("errorText").textContent = message.slice(0, 500);
+      scanStatus.textContent = "";
+      errorPanel.classList.remove("hidden");
+      errorPanel.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "nearest" });
+    }
+
+    async function apiError(resp) {
+      const text = await resp.text().catch(() => "");
+      try {
+        const body = JSON.parse(text);
+        if (body && typeof body.error === "string" && body.error) return body.error;
+      } catch {}
+      return text.trim() || t("apiStatus", { n: resp.status });
+    }
+
+    function paintScanBtn() {
+      scanBtn.querySelector("span").textContent = t(scanBtn.disabled ? (activeMode === "page" ? "scanning" : "crawling") : "scanNow");
+    }
+
+    scanForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const targetUrl = withScheme(urlInput.value);
+      const keyphrase = keyphraseInput.value.trim();
+      if (!targetUrl) return;
+
+      scanBtn.disabled = true;
+      paintScanBtn();
+      errorPanel.classList.add("hidden");
+
+      if (activeMode === "site") {
+        await executeSiteCrawl(targetUrl, keyphrase);
+        scanBtn.disabled = false;
+        paintScanBtn();
+        return;
+      }
+
+      $("crawlSection").classList.add("hidden");
+      setBusy(true);
+      try {
+        const resp = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: targetUrl, keyphrase }),
+        });
+        if (!resp.ok) throw new Error(await apiError(resp));
+        currentScan = await resp.json();
+        await finishAgent();
+        setBusy(false);
+        renderScanResults(currentScan, targetUrl);
+        saveRecentScan(targetUrl, overallScore(currentScan));
+      } catch (err) {
+        setBusy(false);
+        showError(err.message);
+      } finally {
+        scanBtn.disabled = false;
+        paintScanBtn();
+      }
+    });
+    $("btnRetry").addEventListener("click", () => scanForm.requestSubmit());
+
+    const FAMILY_WEIGHTS = { SEO: 50, AEO: 25, GEO: 25 };
+    const familyName = family => t("fam" + family);
+
+    function overallScore(data) {
+      if (typeof data.overall === "number") return data.overall;
+      return Math.round((data.seo.score || 0) * 0.5 + (data.aeo.score || 0) * 0.25 + (data.geo.score || 0) * 0.25);
+    }
+
+    function familyChecks(data, family) {
+      const fam = data[family.toLowerCase()] || {};
+      const worth = fam.total ? FAMILY_WEIGHTS[family] / fam.total : 0;
+      return (fam.checks || []).map(c => ({ ...c, cat: family, worth }));
+    }
+
+    const formatWorth = (worth) => t("pts", { n: worth.toFixed(1) });
+
+    function setRing(id, score) {
+      const ring = $(id);
+      if (ring) ring.style.strokeDashoffset = 314.16 * (1 - Math.min(100, Math.max(0, score)) / 100);
+    }
+
+    function grade(overall) {
+      if (overall >= 90) return ["grade-a", "gradeA"];
+      if (overall >= 80) return ["grade-b", "gradeB"];
+      if (overall >= 70) return ["grade-c", "gradeC"];
+      if (overall >= 60) return ["grade-c", "gradeD"];
+      return ["grade-f", "gradeF"];
+    }
+
+    function headline(overall) {
+      if (overall >= 90) return t("head90");
+      if (overall >= 70) return t("head70");
+      if (overall >= 50) return t("head50");
+      return t("head0");
+    }
+
+    const isFailing = c => c.applicable !== false && !c.pass;
+    const sumWorth = checks => checks.reduce((total, c) => total + c.worth, 0);
+
+    function renderTopFixes(top, failing) {
+      const list = $("topFixes");
+      list.replaceChildren();
+      if (top.length === 0) {
+        $("nextLine").textContent = t("allPass");
+        return;
+      }
+      $("nextLine").textContent = t(top.length === 1 ? "nextOne" : "nextMany", { n: top.length, got: sumWorth(top).toFixed(1), all: sumWorth(failing).toFixed(1) });
+      top.forEach(c => {
+        const card = el("li", "fix-card");
+        const head = el("div", "fix-head");
+        head.append(el("strong", "", checkTitle(c)), el("span", "pts", "+" + formatWorth(c.worth)));
+        const meta = el("div", "fix-meta");
+        meta.append(el("span", "", familyName(c.cat)));
+        const engines = engineBadges(c.cat);
+        if (engines) meta.append(engines);
+        const detail = englishDetail(c, "p", "fix-detail");
+        card.append(head, meta, ...(detail ? [detail] : []), el("p", "fix-how", checkAdvice(c)));
+        list.append(card);
+      });
+    }
+
+    async function loadCwv(url) {
+      $("cwvSection").hidden = false;
+      $("cwvLine").textContent = t("cwvTesting");
+      $("cwvList").replaceChildren();
+      try {
+        const resp = await fetch("/api/cwv", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+        const data = await resp.json();
+        if (url !== scannedUrl) return;
+        if (resp.status === 503) return void ($("cwvSection").hidden = true);
+        if (!resp.ok) return void ($("cwvLine").textContent = data.error || t("cwvFail"));
+        $("cwvLine").textContent = t("cwvScore", { score: data.score, passed: data.passed, total: data.total });
+        $("cwvList").replaceChildren(...data.checks.map(c => el("li", "", `${c.pass ? "✓" : "✗"} ${c.label}`)));
+      } catch {
+        $("cwvLine").textContent = t("cwvFail");
+      }
+    }
+
+    function suggestBlock(label, text) {
+      const block = el("div", "");
+      const copy = el("button", "btn-action", t("copy"));
+      copy.type = "button";
+      copy.addEventListener("click", () => navigator.clipboard.writeText(text).then(() => showToast(t("textCopied")), () => showToast(t("copyFail"))));
+      const body = el("p", "", text);
+      body.style.whiteSpace = "pre-wrap";
+      block.append(el("h3", "", label), body, copy);
+      return block;
+    }
+
+    let suggestRequestId = 0;
+    async function loadSuggest() {
+      const url = scannedUrl;
+      const requestId = ++suggestRequestId;
+      $("btnSuggest").disabled = true;
+      $("suggestLine").textContent = t("suggestWorking");
+      $("suggestOut").replaceChildren();
+      try {
+        const resp = await fetch("/api/suggest", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url, keyphrase: auditedKeyphrase }) });
+        const data = await resp.json();
+        if (url !== scannedUrl || requestId !== suggestRequestId) return;
+        if (!resp.ok) return void ($("suggestLine").textContent = data.error || t("suggestFail"));
+        $("suggestLine").textContent = "";
+        $("suggestOut").replaceChildren(
+          suggestBlock(t("suggestTitle"), data.title),
+          suggestBlock(t("suggestDescription"), data.description),
+          suggestBlock(t("suggestFaq"), data.faq.map(f => `Q: ${f.q}\nA: ${f.a}`).join("\n\n")),
+        );
+      } catch {
+        if (requestId === suggestRequestId) $("suggestLine").textContent = t("suggestFail");
+      } finally {
+        if (requestId === suggestRequestId) $("btnSuggest").disabled = false;
+      }
+    }
+
+    $("btnSuggest").addEventListener("click", loadSuggest);
+
+    function renderScanResults(data, url) {
+      scannedUrl = url;
+      document.body.classList.add("has-results");
+      const onWorker = !!document.querySelector('meta[name="findable-watch"]');
+      $("watchSection").hidden = !onWorker;
+      suggestRequestId++;
+      $("btnSuggest").disabled = false;
+      $("suggestOut").replaceChildren();
+      $("suggestLine").textContent = "";
+      if (onWorker) loadCwv(url);
+      const resultsEl = $("results");
+      resultsEl.classList.remove("hidden");
+      auditedAt = new Date();
+      auditedKeyphrase = keyphraseInput.value.trim();
+      setMode("page");
+      setPassingVisible(false, 0);
+      paintResults(data, url);
+      scanStatus.textContent = t("scanComplete", { url, o: overallScore(data), f: allChecks.filter(isFailing).length });
+      resultsEl.style.scrollMarginTop = document.querySelector(".hero").offsetHeight + 12 + "px";
+      resultsEl.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+      $("resultsHeading").focus({ preventScroll: true });
+    }
+
+    function paintResults(data, url) {
+      $("resultUrl").textContent = url;
+      document.title = t("docTitle", { host: recentHost(url) || url, n: overallScore(data) });
+      $("resultDate").textContent = t("audited", { date: auditedAt.toLocaleString() }) + (auditedKeyphrase ? t("keyphraseLine", { kp: auditedKeyphrase }) : "");
+
+      const overall = overallScore(data);
+      $("valOverall").textContent = overall;
+      setRing("ringOverall", overall);
+      const [gradeClass, gradeKey] = grade(overall);
+      const gradeEl = $("gradeOverall");
+      gradeEl.className = "grade-badge " + gradeClass;
+      gradeEl.textContent = t(gradeKey);
+      $("resultsHeading").textContent = headline(overall);
+      $("summaryLine").textContent = t("summaryLine", { n: overall });
+
+      allChecks = [...familyChecks(data, "SEO"), ...familyChecks(data, "AEO"), ...familyChecks(data, "GEO")];
+      const applicable = allChecks.filter(c => c.applicable !== false);
+      const failing = allChecks.filter(isFailing);
+      $("failingSummary").textContent = t("failingSummary", { f: failing.length, a: applicable.length });
+      renderTopFixes([...failing].sort((a, b) => b.worth - a.worth).slice(0, 3), failing);
+
+      for (const family of ["SEO", "AEO", "GEO"]) {
+        const fam = data[family.toLowerCase()] || {};
+        const score = fam.score || 0;
+        $("val" + family).textContent = score;
+        setRing("ring" + family, score);
+        $("detail" + family).textContent = t("famDetail", { p: fam.passed || 0, t: fam.total || 0 });
+        renderWorst($("worst" + family), failing.filter(c => c.cat === family));
+      }
+
+      $("issuesHeading").textContent = t("issuesCount", { n: failing.length });
+      renderGroups($("failingList"), failing, t("noFailingAll"));
+      const passing = allChecks.filter(c => !isFailing(c));
+      renderGroups($("passingList"), passing, t("noPassing"));
+      setPassingVisible(btnTogglePassing.getAttribute("aria-expanded") === "true", passing.length);
+    }
+
+    function renderWorst(list, failing) {
+      list.replaceChildren();
+      if (failing.length === 0) {
+        list.append(el("li", "none", t("noFailingShort")));
+        return;
+      }
+      failing.slice(0, 3).forEach(c => list.append(el("li", "", checkTitle(c))));
+    }
+
+    function renderGroups(container, checks, emptyText) {
+      container.replaceChildren();
+      if (checks.length === 0) {
+        container.append(el("div", "checks-container issues-empty", emptyText));
+        return;
+      }
+      const groups = ["SEO", "AEO", "GEO"]
+        .map(f => checks.filter(c => c.cat === f))
+        .filter(group => group.length > 0)
+        .sort((a, b) => b[0].worth - a[0].worth);
+      for (const group of groups) {
+        const list = el("div", "checks-container");
+        group.forEach(c => list.append(checkRow(c)));
+        container.append(el("h3", "group-title", t("groupTitle", { fam: familyName(group[0].cat), n: group.length, pts: formatWorth(group[0].worth) })), list);
+      }
+    }
+
+    function checkRow(c) {
+      const isNA = c.applicable === false;
+      const details = el("details", "check-row");
+      details.dataset.id = c.id;
+      const summary = el("summary", "check-summary");
+      summary.append(el("span", "status-badge " + (isNA ? "status-na" : c.pass ? "status-pass" : "status-fail"), t(isNA ? "statusNA" : c.pass ? "statusPass" : "statusFail")));
+      const content = el("div", "check-content");
+      const meta = el("div", "check-meta mono", isNA ? c.id : `${c.id} · ${t("worth", { pts: formatWorth(c.worth) })}`);
+      const engines = engineBadges(c.cat);
+      if (engines) meta.append(engines);
+      const detail = englishDetail(c, "div", "check-detail");
+      content.append(el("div", "check-label", checkTitle(c)), ...(detail ? [detail] : []), meta);
+      summary.append(content);
+      const card = el("div", "fix-drawer-card");
+      card.append(el("strong", "", t("howToFix")), checkAdvice(c));
+      const drawer = el("div", "fix-drawer");
+      drawer.append(card);
+      details.append(summary, drawer);
+      return details;
+    }
+
+    const btnTogglePassing = $("btnTogglePassing");
+    function setPassingVisible(visible, count) {
+      $("passingWrap").hidden = !visible;
+      btnTogglePassing.setAttribute("aria-expanded", String(visible));
+      btnTogglePassing.textContent = t(visible ? "hidePassing" : "showPassing", { n: count });
+    }
+    btnTogglePassing.addEventListener("click", () => {
+      setPassingVisible(btnTogglePassing.getAttribute("aria-expanded") !== "true", allChecks.filter(c => !isFailing(c)).length);
+    });
+
+    const today = () => new Date().toISOString().split("T")[0];
+    const reportFileName = ext => `findable-report-${recentHost(scannedUrl) || "page"}-${today()}.${ext}`;
+
+    function download(content, type, name) {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([content], { type }));
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    $("btnExportJSON").addEventListener("click", () => {
+      if (!currentScan) return;
+      download(JSON.stringify(currentScan, null, 2), "application/json", reportFileName("json"));
+      showToast(t("jsonExported"));
+    });
+
+    $("btnExportCSV").addEventListener("click", () => {
+      if (!currentScan) return;
+      const rows = [
+        ["SEO/AEO/GEO Report", recentHost(scannedUrl) || "", today()],
+        ["Generated by", "findable", ""],
+        [""],
+        ["Category", "Score", "Passed", "Total"],
+        ["Overall", overallScore(currentScan), "", ""],
+        ["SEO", currentScan.seo.score, currentScan.seo.passed, currentScan.seo.total],
+        ["AEO", currentScan.aeo.score, currentScan.aeo.passed, currentScan.aeo.total],
+        ["GEO", currentScan.geo.score, currentScan.geo.passed, currentScan.geo.total],
+        [""],
+        ["Check ID", "Category", "Status", "Description"]
+      ];
+      allChecks.forEach(c => {
+        const st = c.applicable === false ? "N/A" : c.pass ? "PASS" : "FAIL";
+        rows.push([c.id, c.cat, st, '"' + c.label.replace(/"/g, '""') + '"']);
+      });
+      download("﻿" + rows.map(r => r.join(",")).join("\n"), "text/csv;charset=utf-8;", reportFileName("csv"));
+      showToast(t("csvExported"));
+    });
+
+    $("btnCopyReport").addEventListener("click", () => {
+      if (!currentScan) return;
+      const text = t("copyReport", { url: scannedUrl, o: overallScore(currentScan), s: currentScan.seo.score, a: currentScan.aeo.score, g: currentScan.geo.score });
+      navigator.clipboard.writeText(text).then(() => showToast(t("summaryCopied")));
+    });
+
+    $("watchForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const status = $("watchStatus");
+      status.textContent = t("watchSaving");
+      try {
+        const resp = await fetch("/api/watch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: $("watchEmail").value, url: scannedUrl, consent: $("watchConsent").checked, hp: $("watchTrap").value }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        status.textContent = resp.ok ? t("watchOk") : data.error || t("watchFail");
+      } catch {
+        status.textContent = t("watchFail");
+      }
+    });
+
+    function shareLink() {
+      const bare = scannedUrl.trim().replace(/^https:\/\//i, "").replace(/^([^/?#]+)\/$/, "$1");
+      const pretty = /^[a-z0-9-]+(\.[a-z0-9-]+)+(:\d+)?(\/[^?#]*)?$/i.test(bare);
+      const params = new URLSearchParams(pretty ? {} : { url: scannedUrl });
+      const kp = keyphraseInput.value.trim();
+      if (kp) params.set("k", kp);
+      const query = params.size ? `?${params}` : "";
+      return pretty ? `${location.origin}/${bare}${query}` : `${location.origin}/${query}`;
+    }
+
+    // toMarkdown:begin
+    const mdCell = text => String(text ?? "").replace(/\|/g, "\\|").replace(/\s*\r?\n\s*/g, " ");
+    function toMarkdown(r) {
+      const lines = [`# findable report: ${r.url}`, "", `Overall: **${r.overall}/100** (${r.grade})`, "", `Audited ${r.date}. [Share this report](${r.link})`, "",
+        "| Family | Score |", "| --- | --- |"];
+      for (const f of ["SEO", "AEO", "GEO"]) lines.push(`| ${f} | ${r.scores[f]} |`);
+      lines.push("", "## Next actions", "");
+      if (r.top.length === 0) lines.push("Every applicable check passes.");
+      r.top.forEach((c, i) => lines.push(`${i + 1}. ${mdCell(c.label)} (+${c.worth.toFixed(1)} pts)`));
+      for (const f of ["SEO", "AEO", "GEO"]) {
+        lines.push("", `## ${f}`, "", "| Status | Check | Detail |", "| --- | --- | --- |");
+        for (const c of r.checks.filter(c => c.cat === f)) {
+          const status = c.applicable === false ? "N/A" : c.pass ? "PASS" : "FAIL";
+          lines.push(`| ${status} | ${mdCell(c.label)} | ${c.applicable !== false && !c.pass ? mdCell(r.advice[c.id] || "") : ""} |`);
+        }
+      }
+      return lines.join("\n") + "\n";
+    }
+    // toMarkdown:end
+    // webmcp:begin
+    function registerWebMcp(modelContext, fetchFn) {
+      if (!modelContext?.registerTool) return;
+      Promise.resolve(modelContext.registerTool({
+        name: "scan_url",
+        description: "Audit a web page for SEO, AEO (answer engines) and GEO (generative engines). Returns 0-100 scores and the failing checks.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            url: { type: "string", description: "Page to audit, e.g. example.com or https://example.com/pricing" },
+            keyphrase: { type: "string", description: "Optional focus keyphrase to check for" },
+          },
+          required: ["url"],
+        },
+        annotations: { readOnlyHint: true },
+        async execute({ url, keyphrase }) {
+          const resp = await fetchFn("/api/scan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, keyphrase }),
+          });
+          const body = await resp.text();
+          let scan;
+          try {
+            scan = JSON.parse(body);
+          } catch {
+            scan = { error: body.trim() || `HTTP ${resp.status}` };
+          }
+          const result = resp.ok
+            ? {
+                overall: scan.overall,
+                seo: scan.seo.score,
+                aeo: scan.aeo.score,
+                geo: scan.geo.score,
+                failing: [scan.seo, scan.aeo, scan.geo].flatMap((c) => c.checks.filter((k) => !k.pass && k.applicable !== false).map((k) => k.label)),
+              }
+            : { error: scan.error ?? `HTTP ${resp.status}` };
+          return { content: [{ type: "text", text: JSON.stringify(result) }] };
+        },
+      })).catch(() => {});
+    }
+    // webmcp:end
+    registerWebMcp(document.modelContext ?? navigator.modelContext, (u, init) => fetch(u, init));
+
+    $("btnExportPDF").addEventListener("click", () => {
+      const closed = [...document.querySelectorAll("#results details:not([open])")];
+      for (const d of closed) d.open = true;
+      window.print();
+      for (const d of closed) d.open = false;
+    });
+
+    $("btnExportMD").addEventListener("click", () => {
+      if (!currentScan) return;
+      const failing = allChecks.filter(isFailing);
+      const overall = overallScore(currentScan);
+      download(toMarkdown({
+        url: scannedUrl, link: shareLink(), date: today(), overall, grade: I18N.en[grade(overall)[1]],
+        scores: { SEO: currentScan.seo.score, AEO: currentScan.aeo.score, GEO: currentScan.geo.score },
+        top: [...failing].sort((a, b) => b.worth - a.worth).slice(0, 3), checks: allChecks, advice: fixAdvice,
+      }), "text/markdown;charset=utf-8;", `findable-${recentHost(scannedUrl) || "page"}-${today()}.md`);
+      showToast(t("mdExported"));
+    });
+
+    function shareSummary() {
+      const host = recentHost(scannedUrl) || scannedUrl;
+      return t("shareSummary", { host, n: overallScore(currentScan), s: currentScan.seo.score, a: currentScan.aeo.score, g: currentScan.geo.score });
+    }
+
+    function setSharePanel(open) {
+      $("sharePanel").hidden = !open;
+      $("btnShareReport").setAttribute("aria-expanded", String(open));
+      if (!open) return;
+      const link = shareLink();
+      const enc = encodeURIComponent;
+      $("shareX").href = `https://x.com/intent/post?text=${enc(`${shareSummary()} ${t("shareAsk")}`)}&url=${enc(link)}`;
+      $("shareLinkedIn").href = `https://www.linkedin.com/sharing/share-offsite/?url=${enc(link)}`;
+      $("shareFacebook").href = `https://www.facebook.com/sharer/sharer.php?u=${enc(link)}`;
+      $("shareText").value = `${shareSummary()}\n${t("shareFull", { link })}`;
+      $("shareNative").hidden = !navigator.share;
+      $("sharePermalink").hidden = !document.querySelector('meta[name="findable-reports"]');
+    }
+
+    async function copyShare(text, done) {
+      try {
+        await navigator.clipboard.writeText(text);
+        $("shareStatus").textContent = done;
+      } catch {
+        $("shareStatus").textContent = t("copyFail");
+      }
+    }
+
+    $("btnShareReport").addEventListener("click", () => {
+      if (!currentScan) return;
+      setSharePanel($("sharePanel").hidden);
+    });
+    $("shareCopyText").addEventListener("click", () => copyShare($("shareText").value, t("textCopied")));
+    $("shareCopyLink").addEventListener("click", () => copyShare(shareLink(), t("linkCopied")));
+    $("sharePermalink").addEventListener("click", async () => {
+      $("shareStatus").textContent = t("permaWorking");
+      try {
+        const resp = await fetch("/api/report", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: scannedUrl }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data.url) throw new Error(data.error || "");
+        await copyShare(data.url, t("permaCopied"));
+      } catch (err) {
+        $("shareStatus").textContent = err.message || t("permaFail");
+      }
+    });
+    $("shareNative").addEventListener("click", async () => {
+      try { await navigator.share({ title: t("shareTitle"), text: shareSummary(), url: shareLink() }); } catch {}
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape" || $("sharePanel").hidden) return;
+      setSharePanel(false);
+      $("btnShareReport").focus();
+    });
+    document.addEventListener("click", e => {
+      if (!$("sharePanel").hidden && !e.target.closest(".share-wrap")) setSharePanel(false);
+    });
+
+    const CRAWL_LIMIT = 20;
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function scanOnce(url, keyphrase, onWait) {
+      const send = () => fetch("/api/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url, keyphrase }),
+      });
+      let resp = await send();
+      for (let retry = 0; resp.status === 429 && onWait && retry < 3; retry++) {
+        onWait();
+        await sleep(20000);
+        resp = await send();
+      }
+      if (!resp.ok) throw new Error(await apiError(resp));
+      return resp.json();
+    }
+
+    async function executeSiteCrawl(startUrl, keyphrase) {
+      const crawlStatus = $("crawlStatus");
+      const tableWrap = $("crawlTableWrap");
+      $("crawlSection").classList.remove("hidden");
+      $("crawlProgress").style.width = "10%";
+      crawlStatus.textContent = t("crawlStart");
+      try {
+        const initial = await scanOnce(startUrl, keyphrase);
+        const startHost = new URL(startUrl).hostname;
+        const queue = [startUrl];
+        (initial.internalLinks || []).forEach(l => {
+          try {
+            if (new URL(l).hostname === startHost && !queue.includes(l) && queue.length < CRAWL_LIMIT) queue.push(l);
+          } catch {}
+        });
+        const crawled = [{ url: startUrl, scan: initial }];
+        renderCrawlTable(tableWrap, crawled);
+        for (let i = 1; i < queue.length; i++) {
+          crawlStatus.textContent = t("crawlPage", { i: i + 1, n: queue.length, url: queue[i] });
+          $("crawlProgress").style.width = `${Math.round(((i + 1) / queue.length) * 100)}%`;
+          try {
+            const waiting = () => (crawlStatus.textContent = t("crawlWait", { i: i + 1, n: queue.length }));
+            crawled.push({ url: queue[i], scan: await scanOnce(queue[i], keyphrase, waiting) });
+            renderCrawlTable(tableWrap, crawled);
+          } catch {}
+        }
+        crawlStatus.textContent = t("crawlDone", { n: crawled.length });
+        renderCommonIssues($("crawlCommon"), crawled);
+        currentScan = initial;
+        renderScanResults(initial, startUrl);
+      } catch (err) {
+        $("crawlSection").classList.add("hidden");
+        showError(err.message);
+      }
+    }
+
+    let crawledPages = null;
+    function renderCommonIssues(wrap, pages) {
+      crawledPages = pages;
+      const counts = new Map();
+      pages.forEach(p => {
+        ["SEO", "AEO", "GEO"].flatMap(f => familyChecks(p.scan, f)).filter(isFailing).forEach(c => {
+          const seen = counts.get(c.id) || { check: c, n: 0 };
+          seen.n++;
+          counts.set(c.id, seen);
+        });
+      });
+      const top = [...counts.values()].sort((a, b) => b.n - a.n).slice(0, 10);
+      wrap.classList.toggle("hidden", top.length === 0);
+      const list = el("ul", "common-issues");
+      top.forEach(i => list.append(el("li", "", `${checkTitle(i.check)} (${t("commonIssuesCount", { c: i.n, n: pages.length })})`)));
+      wrap.replaceChildren(el("h3", "", t("commonIssuesHeading")), list);
+    }
+
+    function renderCrawlTable(wrap, pages) {
+      const table = el("table", "crawl-table");
+      const head = el("tr");
+      ["URL", "SEO", "AEO", "GEO", t("colOverall")].forEach(h => head.append(el("th", "", h)));
+      const body = el("tbody");
+      pages.forEach(p => {
+        const row = el("tr");
+        row.append(el("td", "mono", p.url));
+        [p.scan.seo.score, p.scan.aeo.score, p.scan.geo.score, overallScore(p.scan)].forEach(v => row.append(el("td", "", String(v))));
+        body.append(row);
+      });
+      const thead = el("thead");
+      thead.append(head);
+      table.append(thead, body);
+      wrap.replaceChildren(table);
+    }
+
+    paintScanBtn();
+    $("langSelect").value = lang;
+    $("langSelect").addEventListener("change", e => {
+      lang = e.target.value;
+      try { localStorage.setItem(LANG_STORAGE_KEY, lang); } catch {}
+      applyStatic();
+      paintScanBtn();
+      repaintResults();
+      loadCheckText().then(repaintResults);
+    });
+    function repaintResults() {
+      if (crawledPages) renderCommonIssues($("crawlCommon"), crawledPages);
+      if (currentScan && !$("results").classList.contains("hidden")) {
+        const openIds = [...document.querySelectorAll("details.check-row[open]")].map(d => d.dataset.id);
+        paintResults(currentScan, scannedUrl);
+        document.querySelectorAll("details.check-row").forEach(d => { d.open = openIds.includes(d.dataset.id); });
+      }
+    }
+    loadCheckText().then(repaintResults);
+
+    if (document.querySelector('meta[name="findable-reports"]')) {
+      $("demo").hidden = false;
+      fetch("/api/stats").then(r => r.ok ? r.json() : null).then(s => {
+        if (s && s.scans > 0) { scanTotal = s.scans; paintScanCount(); }
+      }).catch(() => {});
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryUrl = urlParams.get("url") || decodeURI(location.pathname.slice(1));
+    if (queryUrl) {
+      urlInput.value = queryUrl;
+      const qKp = urlParams.get("k") || urlParams.get("keyphrase");
+      if (qKp) keyphraseInput.value = qKp;
+      scanForm.requestSubmit();
+    }
+  </script>
+</body>
+</html>
