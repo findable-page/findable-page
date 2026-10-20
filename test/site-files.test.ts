@@ -70,9 +70,9 @@ test("headSlot emits the top-level types and sameAs links the scanner looks for"
   expect(app.applicationCategory).toBe("DeveloperApplication");
   expect(app.url).toBe(ORIGIN);
   expect(app.offers).toMatchObject({ price: "0" });
-  expect(app.sameAs).toEqual(["https://github.com/nadimtuhin/findable"]);
+  expect(app.sameAs).toEqual(["https://github.com/findable-page/findable"]);
   for (const b of blocks.slice(1)) expect((b.sameAs as string[]).length).toBeGreaterThan(0);
-  expect(blocks[1]).toMatchObject({ name: "Nadim Tuhin", sameAs: ["https://github.com/nadimtuhin"] });
+  expect(blocks[1]).toMatchObject({ name: "findable", sameAs: ["https://github.com/findable-page"] });
 });
 
 test("headSlot adds FAQPage only when FAQ items are passed and escapes angle brackets", () => {

@@ -161,7 +161,7 @@ test("tags inside noscript, script, style and comments are ignored", async () =>
   const pixel = '<noscript><img height="1" width="1" src="https://www.facebook.com/tr?id=1"/></noscript>';
   const good = '<img src="a.png" alt="A cat" width="1" height="1">';
   expect(await passes("img_alt", pixel + good)).toBe(true);
-  expect(await passes("img_dimensions", "<!-- <img src=x> --><script>var a='<img src=y>'</script>" + good)).toBe(true);
+  expect(await passes("img_dimensions", `<!-- <img src=x> --><script>var a='<img src=y>'</script>${good}`)).toBe(true);
 });
 
 test("text_html_ratio uses byte lengths so multibyte text matches the Go engine", async () => {

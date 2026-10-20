@@ -31,7 +31,7 @@ ${CTA}
 <h2 id="grades">What do the grades mean?</h2>
 <p>The overall score maps to a grade: 90 to 100 is A+ Excellent, 80 to 89 is A Good, 70 to 79 is B Fair, 60 to 69 is C Needs work and below 60 is Critical issues.</p>
 <h2 id="free">Is it really free?</h2>
-<p>Yes. There is no account, no paywall and no trial. The code is MIT licensed on <a href="https://github.com/nadimtuhin/findable" rel="noopener">GitHub</a>. Scans are rate limited to keep the service available for everyone.</p>
+<p>Yes. There is no account, no paywall and no trial. The code is MIT licensed on <a href="https://github.com/findable-page/findable" rel="noopener">GitHub</a>. Scans are rate limited to keep the service available for everyone.</p>
 <h2 id="limits">What are the limits?</h2>
 <p>It scores one page at a time, so a good score on one URL says nothing about the rest of your site. It checks signals on the page. It doesn't ask Google Search or any AI product how it ranks or cites you, and a high score is not a promise about rankings or citations.</p>
 <h2 id="more">Other ways to run it</h2>
@@ -115,7 +115,7 @@ ${CTA}
 <h2 id="privacy">What is sent where?</h2>
 <p>When you click a scan button, the plugin sends the public permalink of the post, and the keyphrase if you set one, to findable.page. Our server fetches that public URL, and the request comes from your site server's IP address. Nothing is sent until you click. See the <a href="/privacy">privacy page</a>.</p>
 <h2 id="install">Where do I get it?</h2>
-<p>The plugin source is in the <code>wp-plugin/findable</code> folder of the <a href="https://github.com/nadimtuhin/findable" rel="noopener">GitHub repository</a>. Scans share the web scanner's rate limit of 10 per minute per IP.</p>`,
+<p>The plugin source is in the <code>wp-plugin/findable</code> folder of the <a href="https://github.com/findable-page/findable" rel="noopener">GitHub repository</a>. Scans share the web scanner's rate limit of 10 per minute per IP.</p>`,
     faq: [
       {
         q: "Is the WordPress plugin free?",

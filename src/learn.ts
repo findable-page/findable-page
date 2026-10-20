@@ -2,9 +2,9 @@ import { FETCH_TIMEOUT_MS, MAX_PAGE_BYTES } from "./guard";
 import { type LearnPost, learnPosts } from "./learn-content";
 import { MAX_SITE_FILE_BYTES } from "./site";
 
-export const AUTHOR = "Nadim Tuhin";
-export const AUTHOR_URL = "https://github.com/nadimtuhin";
-export const REPO_URL = "https://github.com/nadimtuhin/findable";
+export const AUTHOR = "findable team";
+export const AUTHOR_URL = "https://github.com/findable-page";
+export const REPO_URL = "https://github.com/findable-page/findable";
 const SITE_NAME = "findable";
 const INDEX_TITLE = "Learn SEO, AEO and GEO with findable";
 const INDEX_DESCRIPTION =

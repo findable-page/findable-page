@@ -134,7 +134,7 @@ describe("page markup", () => {
       expect(html.match(/<h1[ >]/g)?.length).toBe(1);
       expect(html).toContain(`<link rel="canonical" href="${ORIGIN}/learn/${post.slug}">`);
       expect(html).toContain(`<time datetime="${post.datePublished}">`);
-      expect(html).toContain("Nadim Tuhin");
+      expect(html).toContain("findable team");
       expect(html).toContain('"@type":"Article"');
       expect(html.includes('"@type":"FAQPage"')).toBe(post.faq.length > 0);
       expect(html).toContain('<a href="/">');
@@ -197,7 +197,7 @@ describe("about, privacy and terms pages", () => {
       expect(html).toContain(`<link rel="canonical" href="${ORIGIN}${path}">`);
       expect(html.match(/<h1>/g)?.length).toBe(1);
       expect(html).not.toMatch(/[–—]/);
-      expect(html).toContain("https://github.com/nadimtuhin/findable");
+      expect(html).toContain("https://github.com/findable-page/findable");
     });
 
     test(`${path} is in sitemap.xml and linked from the learn footer`, async () => {

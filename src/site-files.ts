@@ -12,8 +12,8 @@ export interface FaqItem {
 export const HEAD_SLOT_MARKER = "<!--slot:head-->";
 
 const AI_BOTS = ["GPTBot", "ClaudeBot", "PerplexityBot", "Google-Extended"];
-const REPO = "https://github.com/nadimtuhin/findable";
-const AUTHOR = { name: "Nadim Tuhin", url: "https://github.com/nadimtuhin" };
+const REPO = "https://github.com/findable-page/findable";
+const AUTHOR = { name: "findable", url: "https://github.com/findable-page" };
 const TAGLINE = "findable: is your site findable by Google and by AI answer engines?";
 
 const SUMMARY =
@@ -21,7 +21,7 @@ const SUMMARY =
   "The web API and the Go CLI both run 160 page checks (98 SEO, 35 AEO, 27 GEO), plus 7 separate site checks (robots.txt, AI crawler access, llms.txt).";
 
 const HOW_TO_USE = [
-  "- CLI: `go install github.com/nadimtuhin/findable/cmd/findable@latest`, then `findable https://example.com`.",
+  "- CLI: `go install github.com/findable-page/findable/cmd/findable@latest`, then `findable https://example.com`.",
   "- MCP: `findable -mcp`, or `npx -y findable-mcp`. Tools: audit_page, audit_html_content, crawl_site, generate_csv_report.",
   "- API: `POST /api/scan` with JSON body `{url, keyphrase?, site?}`; `site: true` adds the site checks.",
   `- Source and license (MIT): ${REPO}`,
