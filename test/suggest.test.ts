@@ -80,6 +80,25 @@ test("/api/suggest answers 503 without an AI binding", async () => {
   expect(resp.status).toBe(503);
 });
 
+test("configured paid suggestions refuse a missing session before page fetch, AI or cache lookup", async () => {
+  let calls = 0;
+  const ai = {
+    run: async () => {
+      calls++;
+      throw new Error("must not call AI");
+    },
+  } as unknown as Ai;
+  const env = {
+    SCAN_LIMITER: limiter,
+    AI: ai,
+    LONGPLAY_SUGGEST_FEATURE_ID: "11111111-1111-4111-8111-111111111111",
+  } as Env;
+  const response = await withPage(() => worker.fetch(post({ url: "bakery.example" }), env));
+  expect(response.status).toBe(401);
+  expect(calls).toBe(0);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+});
+
 test("/api/suggest rejects a keyphrase over 100 chars with 400", async () => {
   const env = { SCAN_LIMITER: limiter, AI: model(goodReply) } as unknown as Env;
   const resp = await worker.fetch(post({ url: "bakery.example", keyphrase: "k".repeat(101) }), env);

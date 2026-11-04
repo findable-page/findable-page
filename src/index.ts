@@ -33,6 +33,7 @@ import { type SiteCategory, siteChecks } from "./site";
 import { headSlot, injectHead, llmsFullTxt, llmsTxt, type PageEntry, robotsTxt, sitemapXml } from "./site-files";
 import { countScan, scanCount } from "./stats";
 import { MAX_KEYPHRASE, parseSuggestion, SUGGEST_MAX_TOKENS, SUGGEST_MODEL, suggestPrompt } from "./suggest";
+import { type SuggestionBillingEnv, suggestionAccess } from "./suggestion-access";
 import { parseWatch, saveWatch } from "./watch";
 
 export interface Check {
@@ -76,7 +77,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-export interface Env {
+export interface Env extends SuggestionBillingEnv {
   SCAN_LIMITER?: RateLimit;
   WATCH_DB?: D1Database;
   PSI_KEY?: string;
@@ -524,13 +525,22 @@ async function suggestResponse(request: Request, url: URL, env: Env): Promise<Re
   const keyphrase = body.keyphrase?.trim() ?? "";
   if (keyphrase.length > MAX_KEYPHRASE)
     return json(400, { error: `keyphrase must be at most ${MAX_KEYPHRASE} characters` });
+  if (env.LONGPLAY_SUGGEST_FEATURE_ID) {
+    const ip = rateLimitKey(request.headers.get("CF-Connecting-IP") ?? "unknown");
+    if (!(await allowScan(env, `suggest-auth:${ip}`)))
+      return json(429, { error: "too many access checks, try again in a minute" });
+    const refused = await suggestionAccess(request, env);
+    if (refused) return refused;
+  }
+  // A paid response must never become a public cached grant; even internal cache hits are checked above.
+  const responseCache = env.LONGPLAY_SUGGEST_FEATURE_ID ? "no-store" : "public, max-age=3600, s-maxage=86400";
   try {
     const cacheKey = new Request(
       `https://findable.page/__suggest/v1/${encodeURIComponent(new URL(target).href)}/${encodeURIComponent(keyphrase)}`,
     );
     const cache = (globalThis as { caches?: { default?: Cache } }).caches?.default;
     const hit = await cache?.match(cacheKey);
-    if (hit) return json(200, await hit.json(), "public, max-age=3600, s-maxage=86400");
+    if (hit) return json(200, await hit.json(), responseCache);
     const ip = rateLimitKey(request.headers.get("CF-Connecting-IP") ?? "unknown");
     if (!(await allowScan(env, `suggest:${ip}`)))
       return json(429, { error: "too many requests, try again in a minute" });
@@ -555,7 +565,7 @@ async function suggestResponse(request: Request, url: URL, env: Env): Promise<Re
       cacheKey,
       new Response(JSON.stringify(suggestion), { headers: { "Cache-Control": "max-age=86400" } }),
     );
-    return json(200, suggestion, "public, max-age=3600, s-maxage=86400");
+    return json(200, suggestion, responseCache);
   } catch (err) {
     if (err instanceof BlockedTargetError) return json(400, { error: err.message });
     console.error("suggest: failed", err);
