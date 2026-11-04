@@ -19,6 +19,7 @@
     "wrangler": "^4.149.0"
   },
   "dependencies": {
+    "@tinkerlandai/longplay-sdk": "0.10.15",
     "workers-og": "^0.0.27"
   }
 }
