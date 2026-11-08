@@ -1,6 +1,7 @@
 import { AUTHOR, AUTHOR_URL, escapeHtml, faqLd, identityGraph, jsonLd, page } from "./learn";
 import type { LearnFaq } from "./learn-content";
 import type { PageEntry } from "./site-files";
+import { renderWordpress, wordpressEntry } from "./wordpress";
 
 interface LandingPage extends PageEntry {
   body: string;
@@ -95,42 +96,7 @@ ${CTA}
       },
     ],
   },
-  {
-    path: "/wordpress",
-    title: "WordPress SEO plugin with Fix All and undo | findable",
-    description:
-      "A free WordPress plugin that scans posts for SEO, AEO and GEO, then applies fixes to the page head with Fix All. Undo restores the previous state.",
-    body: `<h1>findable for WordPress</h1>
-<p>The findable plugin scans your posts and pages for SEO, AEO and GEO from inside WordPress. It is free and open source, and it uses the same ${COUNTS} as the web scanner.</p>
-${CTA}
-<h2 id="what-it-does">What does it do?</h2>
-<ul>
-<li>A box in the editor scans the published URL, with an optional focus keyphrase.</li>
-<li>A score column appears in the Posts and Pages lists.</li>
-<li>Tools &gt; findable bulk scans your latest posts, up to 20.</li>
-</ul>
-<h2 id="fix-all">What does Fix All do?</h2>
-<p>Fix All prints a meta description, a canonical if WordPress doesn't already print one, Open Graph and twitter:card tags, Article and BreadcrumbList JSON-LD, and robots max-snippet and max-image-preview in the page head. Your post content is never edited. Undo fixes restores the previous state.</p>
-<p>If an SEO plugin such as Yoast SEO or Rank Math is active, findable skips printing the tags so they are not duplicated.</p>
-<h2 id="privacy">What is sent where?</h2>
-<p>When you click a scan button, the plugin sends the public permalink of the post, and the keyphrase if you set one, to findable.page. Our server fetches that public URL, and the request comes from your site server's IP address. Nothing is sent until you click. See the <a href="/privacy">privacy page</a>.</p>
-<h2 id="install">Where do I get it?</h2>
-<p>The plugin source is in the <code>wp-plugin/findable</code> folder of the <a href="https://github.com/findable-page/findable" rel="noopener">GitHub repository</a>. Scans share the web scanner's rate limit of 10 per minute per IP.</p>`,
-    faq: [
-      {
-        q: "Is the WordPress plugin free?",
-        a: "Yes. It is free and open source under GPLv2 or later. The rest of the repository is MIT.",
-      },
-      {
-        q: "Does Fix All change my posts?",
-        a: "No. It prints tags in the page head and never edits post content. Undo fixes restores the previous state.",
-      },
-      {
-        q: "Does it work with Yoast or Rank Math?",
-        a: "Yes. When a known SEO plugin is detected, findable skips printing its own tags so nothing is duplicated.",
-      },
-    ],
-  },
+  { ...wordpressEntry, body: "", faq: [] },
   {
     path: "/compare",
     title: "findable vs seoscore.tools | findable",
@@ -151,7 +117,7 @@ ${CTA}
 <tr><td>Export</td><td>CSV, PDF, JSON, Markdown, SARIF</td><td>CSV, PDF</td></tr>
 <tr><td>Public report link</td><td>Yes, kept 90 days</td><td>Yes, kept 90 days</td></tr>
 <tr><td>Languages</td><td>5</td><td>5</td></tr>
-<tr><td>WordPress plugin</td><td>Free, with Fix All, undo and full-site scan</td><td>Auto-fixes, $79</td></tr>
+<tr><td>WordPress plugin</td><td>Free, with editor scores, site dashboard and background bulk scans</td><td>Auto-fixes, $79</td></tr>
 <tr><td>AI mentions and AI content generator</td><td>No</td><td>Yes</td></tr>
 <tr><td>Command line tool</td><td>Yes</td><td>No</td></tr>
 <tr><td>MCP server</td><td>Yes</td><td>No</td></tr>
@@ -188,6 +154,7 @@ export const landingEntries: PageEntry[] = LANDING_PAGES.map(({ path, title, des
 }));
 
 export function renderLanding(pathname: string, origin: string): string | null {
+  if (pathname.replace(/(.)\/$/, "$1") === "/wordpress") return renderWordpress(origin);
   const landing = LANDING_PAGES.find((p) => p.path === pathname.replace(/(.)\/$/, "$1"));
   if (!landing) return null;
   const byline = `<p class="byline">By <a href="${AUTHOR_URL}" rel="noopener">${AUTHOR}</a>. Updated <time datetime="${UPDATED}">${UPDATED}</time>.</p>`;
