@@ -1,5 +1,6 @@
 import { expect, test } from "bun:test";
 import { readdirSync } from "node:fs";
+import worker from "../src/index";
 
 const PUBLIC_DIR = new URL("../public/", import.meta.url);
 const INDEX_HTML = new URL("../web/index.html", import.meta.url);
@@ -22,6 +23,10 @@ test("worker/public holds exactly the static assets the UI references", async ()
     "site.webmanifest",
   ]);
   expect(readdirSync(PUBLIC_DIR.pathname).sort()).toEqual(
-    [...referenced, "favicon-32.png", "icon-192.png", "icon-512.png", "og.png"].sort(),
+    [...referenced, "favicon-32.png", "icon-192.png", "icon-512.png", "og.png", "wordpress"].sort(),
   );
+  const wordpress = await (await worker.fetch(new Request("https://findable.page/wordpress"))).text();
+  const screenshots = [...wordpress.matchAll(/<img src="\/wordpress\/([^"]+)"/g)].map((m) => m[1] ?? "");
+  expect(screenshots).toHaveLength(4);
+  expect(readdirSync(new URL("wordpress/", PUBLIC_DIR).pathname).sort()).toEqual(screenshots.sort());
 });

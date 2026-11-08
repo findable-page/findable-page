@@ -21,7 +21,7 @@ describe("landing pages", () => {
       expect(resp.status).toBe(200);
       expect(resp.headers.get("Content-Type")).toBe("text/html; charset=utf-8");
       expect(html).toContain(`<link rel="canonical" href="${ORIGIN}${path}">`);
-      expect(html).toMatch(/<h1>[^<]+<\/h1>/);
+      expect(html).toMatch(/<h1(?:\s[^>]*)?>[^<]+<\/h1>/);
       expect(html).toContain('href="/"');
       expect(ldBlocks(html).some((b) => b["@type"] === "FAQPage")).toBe(true);
     });
